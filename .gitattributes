@@ -1,24 +1,8 @@
-# Normalize text where useful for diffs
-*.lua text
-*.txt text
-*.xml text
-*.json text
-*.md text
+# Game dump: store files exactly as processed (no CRLF/LF rewriting).
+# That avoids noisy "CRLF will be replaced by LF" warnings and keeps bytes stable.
+* -text
 
-# Binary game assets
-*.tex binary
-*.dyn binary
-*.bin binary
-*.ktx binary
-*.png binary
-*.jpg binary
-*.jpeg binary
-*.ogg binary
-*.fev binary
-*.fsb binary
-*.zip binary
-*.ttf binary
-*.otf binary
-
-# Stripped PE stubs are JSON metadata
-*.meta.json text
+# Repo docs only — normalize for readability
+*.md text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf
