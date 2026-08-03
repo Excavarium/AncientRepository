@@ -1,0 +1,24 @@
+# Normalize text where useful for diffs
+*.lua text
+*.txt text
+*.xml text
+*.json text
+*.md text
+
+# Binary game assets
+*.tex binary
+*.dyn binary
+*.bin binary
+*.ktx binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ogg binary
+*.fev binary
+*.fsb binary
+*.zip binary
+*.ttf binary
+*.otf binary
+
+# Stripped PE stubs are JSON metadata
+*.meta.json text
