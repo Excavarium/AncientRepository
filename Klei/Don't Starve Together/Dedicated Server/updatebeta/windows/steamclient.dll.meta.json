@@ -1,0 +1,7 @@
+{
+  "original_name": "steamclient.dll",
+  "relative_hint": "steamclient.dll",
+  "sha256": "6e2f86c30fd2314a2602c39ffae046d84548b615d1a4def0adb00b9f60966700",
+  "size": 20623000,
+  "note": "Binary stripped from AncientRepository; hash retained for change detection."
+}

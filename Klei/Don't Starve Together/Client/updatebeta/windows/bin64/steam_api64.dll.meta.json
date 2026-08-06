@@ -1,0 +1,7 @@
+{
+  "original_name": "steam_api64.dll",
+  "relative_hint": "steam_api64.dll",
+  "sha256": "ca1fa9a7609ab10b7926400559cf073e5888423cc156af72c6027d72a89eea73",
+  "size": 265504,
+  "note": "Binary stripped from AncientRepository; hash retained for change detection."
+}

@@ -1,0 +1,1 @@
+This file is unused. It is to avoid an empty klump.zip databundle, when we don't have any active klump files.
