@@ -1,0 +1,28 @@
+"installscript"
+{
+	"Run Process"
+	{
+		"x86 SP1"
+		{
+			"hasrunkey"		"HKEY_LOCAL_MACHINE\\Software\\Valve\\Steam\\Apps\\CommonRedist\\vcredist\\2008"
+			"process 1"		"%INSTALLDIR%\\_CommonRedist\\vcredist\\2008\\vcredist_x86.exe"
+			"command 1"		"/q /norestart"
+			"nocleanup"		"1"
+		}
+		"x64 SP1"
+		{
+			"hasrunkey"		"HKEY_LOCAL_MACHINE\\Software\\Valve\\Steam\\Apps\\CommonRedist\\vcredist\\2008"
+			"process 1"		"%INSTALLDIR%\\_CommonRedist\\vcredist\\2008\\vcredist_x64.exe"
+			"command 1"		"/q /norestart"
+			"nocleanup"		"1"
+			"requirement_os"
+			{
+				"is64bitwindows"		"1"
+			}
+		}
+	}
+}
+"kvsignatures"
+{
+	"installscript"		"38d41295b77e76321e3488fdbe3db8e6b60c40578d12366cf858a06f944ac8b107513858593d0876aa139747e23e56b6eb88403d222eb10b0be5fc8afef2acf98b8973c8b558d77dfcd5fda4d35ca97eff4e700930a2da23cb55d701beb3f5e27d2fc8c259f09d6a51c842b8908f4ea0d318b9181b2d3e4a296c2bc9fb649a56"
+}
