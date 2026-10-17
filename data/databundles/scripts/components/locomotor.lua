@@ -842,7 +842,7 @@ function LocoMotor:PreviewAction(bufferedaction, run, try_instant)
         if action_pos ~= nil then
             self:GoToPoint(nil, bufferedaction, run)
         end
-	elseif bufferedaction.action.instant or bufferedaction.action.do_not_locomote or bufferedaction.options.instant then
+	elseif bufferedaction.action.instant or bufferedaction.action.do_not_locomote or bufferedaction.options.instant or bufferedaction.options.do_not_locomote then
         self.inst:PreviewBufferedAction(bufferedaction)
     elseif bufferedaction.target ~= nil then
 		local inventoryitem = bufferedaction.target.replica.inventoryitem
@@ -943,7 +943,7 @@ function LocoMotor:PushAction(bufferedaction, run, try_instant)
         if action_pos ~= nil then
             self:GoToPoint(nil, bufferedaction, run, bufferedaction.overridedest)
         end
-	elseif bufferedaction.action.instant or bufferedaction.action.do_not_locomote or bufferedaction.options.instant then
+	elseif bufferedaction.action.instant or bufferedaction.action.do_not_locomote or bufferedaction.options.instant or bufferedaction.options.do_not_locomote then
         self.inst:PushBufferedAction(bufferedaction)
     elseif bufferedaction.target ~= nil then
 		local owner = bufferedaction.target.components.inventoryitem ~= nil and bufferedaction.target.components.inventoryitem.owner or nil
@@ -1006,7 +1006,7 @@ function LocoMotor:GoToEntity(target, bufferedaction, run)
 
         local extra_arrive_dist = (bufferedaction ~= nil and bufferedaction.action ~= nil and bufferedaction.action.extra_arrive_dist) or nil
         if extra_arrive_dist ~= nil then
-            arrive_dist = arrive_dist + extra_arrive_dist(self.inst, self.dest, bufferedaction)
+            arrive_dist = arrive_dist + extra_arrive_dist(self.inst, self.dest, bufferedaction, arrive_dist)
         end
 
         if bufferedaction ~= nil and bufferedaction.action.mindistance ~= nil and bufferedaction.action.mindistance > arrive_dist then
@@ -1464,7 +1464,7 @@ function LocoMotor:OnUpdate(dt, arrive_check_only)
 
         local reached_dest, invalid, in_cooldown = nil, nil, false
 		if self.bufferedaction and self.bufferedaction.action.customarrivecheck then
-			reached_dest, invalid = self.bufferedaction.action.customarrivecheck(self.inst, self.dest)
+			reached_dest, invalid = self.bufferedaction.action.customarrivecheck(self.inst, self.dest, self.bufferedaction)
 		else
 			local dsq = distsq(destpos_x, destpos_z, mypos_x, mypos_z)
 			local arrive_dsq = self.arrive_dist * self.arrive_dist
@@ -1607,10 +1607,11 @@ function LocoMotor:OnUpdate(dt, arrive_check_only)
 						--Print(VERBOSITY.DEBUG, "SET ROT", facedir)
 						self:SetMoveDir(facedir)
 					end
-				elseif canrotate and not (self.inst.sg and self.inst.sg:HasStateTag("busy")) then
+				elseif canrotate --[[and not (self.inst.sg and self.inst.sg:HasStateTag("busy"))]] then
 					--V2C: while I'd like to remove the busy check,
 					--     we'll keep it to match legacy behaviour:
 					--     it used to call self.inst:FaceMovePoint(...)
+					--V2C [2026/07/23]: removing the "busy" check after all...
 					--Print(VERBOSITY.DEBUG, "FACE PT", Point(facepos_x, facepos_y, facepos_z))
 					self:SetMoveDir(facedir)
                 end

@@ -129,6 +129,15 @@ local function CheckTileWithinRange(doer, dest)
     end
 end
 
+local function CheckInsideGolfGame(doer, dest, bufferedaction)
+    local target = bufferedaction and bufferedaction.target or nil
+    if target and target.IsInGolfArea then
+        local x, y, z = doer.Transform:GetWorldPosition()
+        return target:IsInGolfArea(x, z)
+    end
+    return true -- Lost target have the player reach the destination immediately to fail.
+end
+
 local function ShowPourWaterTilePlacer(right_mouse_action)
     if right_mouse_action ~= nil then
 
@@ -254,6 +263,13 @@ local function ExtraWobyForagingDist(doer, dest, bufferedaction)
     return .5 + (doer:HasTag("largecreature") and 1 or 0)
 end
 
+local function ExtraOpenCraftingRange(doer, dest, bufferedaction, arrive_dist)
+    local target = bufferedaction and bufferedaction.target or nil
+    local dist = (target and target.override_open_crafting_range) or TUNING.RESEARCH_MACHINE_DIST - 1
+    return dist > arrive_dist and (dist - arrive_dist)
+        or 0
+end
+
 global("CLIENT_REQUESTED_ACTION")
 CLIENT_REQUESTED_ACTION = nil
 
@@ -330,6 +346,8 @@ Action = Class(function(self, data, instant, rmb, distance, ghost_valid, ghost_e
     self.map_only = data.map_only -- Action only exists from a map.
     self.map_works_on_unexplored = data.map_works_on_unexplored -- Bypass seeable checks.
     self.map_works_on_impassable = data.map_works_on_impassable -- Allow impassable tiles for selection.
+
+    self.keepgroundactionhint = data.keepgroundactionhint -- Allow a nameless target to retain the ground action hint for controllers.
 end)
 
 -- NOTE: High priority is intended to be a shortcut flag for actions that we expect to always dominate if they are available.
@@ -415,7 +433,7 @@ ACTIONS =
     TELEPORT = Action({ rmb=true, distance=2 }),
     RESETMINE = Action({ priority=3 }),
     ACTIVATE = Action({ priority=2, invalid_hold_action = true }),
-    OPEN_CRAFTING = Action({priority=2, distance = TUNING.RESEARCH_MACHINE_DIST - 1}),
+    OPEN_CRAFTING = Action({priority=2, distance = nil, extra_arrive_dist=ExtraOpenCraftingRange}),
     MURDER = Action({ priority=1, mount_valid=true }),
     HEAL = Action({ mount_valid=true, extra_arrive_dist=ExtraHealRange }),
     INVESTIGATE = Action(),
@@ -434,9 +452,9 @@ ACTIONS =
     TAKEITEM = Action(),
     TAKESINGLEITEM = Action(),
     MAKEBALLOON = Action({ mount_valid=true }),
-    CASTSPELL = Action({ priority=-1, rmb=true, distance=20, mount_valid=true }),
+    CASTSPELL = Action({ priority=-1, rmb=true, distance=20, mount_valid=true, invalid_hold_action=true }),
 	CAST_POCKETWATCH = Action({ priority=-1, rmb=true, mount_valid=true }), -- to actually use the mounted action, the pocket watch will need the pocketwatch_mountedcast tag
-    BLINK = Action({ priority=HIGH_ACTION_PRIORITY, rmb=true, distance=36, mount_valid=true, encumbered_valid=true }),
+    BLINK = Action({ priority=HIGH_ACTION_PRIORITY, rmb=true, distance=36, mount_valid=true, encumbered_valid=true, invalid_hold_action=true }),
     BLINK_MAP = Action({ priority=HIGH_ACTION_PRIORITY, customarrivecheck=ArriveAnywhere, rmb=true, mount_valid=true, encumbered_valid=true, map_action=true, }),
     COMBINESTACK = Action({ mount_valid=true, extra_arrive_dist=ExtraPickupRange }),
 	TOGGLE_DEPLOY_MODE = Action({ priority=HIGH_ACTION_PRIORITY, instant=true, mount_valid=true, floating_valid=true }),
@@ -464,11 +482,11 @@ ACTIONS =
 	STOPCONSTRUCTION = Action({ priority=1, instant=true, distance=2 }),
 	APPLYCONSTRUCTION = Action({ priority=1, instant=true, distance=2 }),
 	--channeling for scene entity
-    STARTCHANNELING = Action({ priority=2, distance=2.1 }), -- Keep higher priority over smother for waterpump but do something else if channelable is added to more things.
-    STOPCHANNELING = Action({ instant=true, distance=2.1 }),
+    STARTCHANNELING = Action({ priority=2, distance=2.1, invalid_hold_action=true, }), -- Keep higher priority over smother for waterpump but do something else if channelable is added to more things.
+    STOPCHANNELING = Action({ instant=true, distance=2.1, invalid_hold_action=true, }),
 	--channeling for equipped item
-	START_CHANNELCAST = Action({ priority=-1, rmb=true, do_not_locomote=true }),
-	STOP_CHANNELCAST = Action({ priority=-1, rmb=true, do_not_locomote=true }),
+	START_CHANNELCAST = Action({ priority=-1, rmb=true, do_not_locomote=true, invalid_hold_action=true, }),
+	STOP_CHANNELCAST = Action({ priority=-1, rmb=true, do_not_locomote=true, invalid_hold_action=true, }),
 	--
 	APPLYPRESERVATIVE = Action(),
     COMPARE_WEIGHABLE = Action({ encumbered_valid=true, priority=HIGH_ACTION_PRIORITY }),
@@ -714,6 +732,15 @@ ACTIONS =
     CLIMB = Action({ ghost_valid=true, encumbered_valid=true }),
     STARTVAULTORBTELEPORT = Action({ rmb = true }),
 	VAULTORBTELEPORT_MAP = Action({ customarrivecheck = ArriveAnywhere, rmb = true, map_only=true, map_works_on_unexplored = true, closes_map=true, }),
+
+	-- Crow Carnival 2026
+	GOLF_START_AIMING = Action({ rmb = true, invalid_hold_action = true }),
+	GOLF_STOP_AIMING = Action({ instant = true }),
+	GOLF_START_CHARGING = Action({ distance = 9999, do_not_locomote = true, invalid_hold_action = true }),
+    TERRAFORM_REMOVE = Action({ customarrivecheck = CheckInsideGolfGame, rmb = true, invalid_hold_action = true, keepgroundactionhint = true, }),
+
+    -- Rifts 8
+    CORRUPTNIGHTMARE = Action({ distance = 20, mount_valid = true, invalid_hold_action = true, }),
 }
 
 ACTIONS_BY_ACTION_CODE = {}
@@ -871,7 +898,7 @@ ACTIONS.PICKUP.fn = function(act)
             act.target.components.inventoryitem.grabbableoverridetag ~= nil and act.doer:HasTag(act.target.components.inventoryitem.grabbableoverridetag)
         ) and
         not (act.target:IsInLimbo() or
-			(act.target.components.burnable ~= nil and act.target.components.burnable:IsBurning() and act.target.components.lighter == nil) or
+			(act.target.components.burnable ~= nil and act.target.components.burnable:IsBurning() and act.target.components.lighter == nil and not act.target:HasTag("torch")) or
             (act.target.components.projectile ~= nil and act.target.components.projectile:IsThrown())) then
 
         if act.doer.components.itemtyperestrictions ~= nil and not act.doer.components.itemtyperestrictions:IsAllowed(act.target) then
@@ -3090,10 +3117,14 @@ ACTIONS.OPEN_CRAFTING.strfn = function(act)
 end
 
 ACTIONS.OPEN_CRAFTING.fn = function(act)
-	if act.doer.components.builder ~= nil then
-		return act.doer.components.builder:UsePrototyper(act.target)
-	end
-	return false;
+    if act.doer and act.doer.components.builder then
+        local prototyper = nil
+        if act.target and not act.target:HasTag("hideprototyperaction") then
+            prototyper = (act.target.components.prototyper and act.target.components.prototyper.redirect_to_prototyper) or act.target
+        end
+        return act.doer.components.builder:UsePrototyper(prototyper)
+    end
+	return false
 end
 
 ACTIONS.CAST_POCKETWATCH.strfn = function(act)
@@ -3406,6 +3437,9 @@ ACTIONS.CASTSPELL.fn = function(act)
     local staff = act.invobject or act.doer.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
 	local act_pos = act:GetActionPoint()
     if staff and staff.components.spellcaster then
+        if staff:HasTag("nomagiccast") then
+            return false
+        end
         if ShouldItemMimicBeRevealedFor(staff, act.doer) then
             return false, "ITEMMIMIC"
         end
@@ -3434,9 +3468,13 @@ ACTIONS.DIRECTCOURIER_MAP.maponly_checkvalidpos_fn = function(act)
         return false
     end
 
+    local act_pos = act:GetActionPoint()
+    if act_pos == nil then
+        return false
+    end
+
     local within_radius = TUNING.SKILLS.WALTER.COURIER_DETECTION_RADIUS
     local within_radiussq = within_radius * within_radius
-    local act_pos = act:GetActionPoint()
     local act_posx, act_posz
     local mindsq = math.huge
     local mapent
@@ -3526,6 +3564,9 @@ end
 ACTIONS.BLINK.fn = function(act)
 	local act_pos = act:GetActionPoint()
     if act.invobject ~= nil then
+        if act.invobject:HasTag("nomagiccast") then
+            return false
+        end
         if ShouldItemMimicBeRevealedFor(act.invobject, act.doer) then
             return false, "ITEMMIMIC"
         end
@@ -5121,8 +5162,10 @@ ACTIONS.REMOVE_FROM_TROPHYSCALE.fn = function(act)
 end
 
 ACTIONS.CYCLE.strfn = function(act)
-    return (act.target ~= nil and act.target:HasTag("singingshell") and "TUNE")
-        or nil
+    return (act.target ~= nil and
+        (act.target:HasTag("singingshell") and "TUNE") or
+        (act.target:HasTag("golf_tee") and "PAR")
+    ) or nil
 end
 
 ACTIONS.CYCLE.fn = function(act)
@@ -6239,6 +6282,7 @@ ACTIONS.WOBY_PICKUP.fn = function(act)
             return false, "NO_HEAVY_LIFTING"
         end
 
+        act.target.components.inventoryitem:OnPickupStopSmoldering(act.doer)
         act.doer:PushEvent("onpickupitem", { item = act.target })
 
         act.doer.components.container:GiveItem(act.target, nil, act.target:GetPosition())
@@ -6697,7 +6741,12 @@ ACTIONS.MAPSCOUTSELECT_MAP.maponly_checkvalidpos_fn = function(act)
 		return false
 	end
 
-	local x, y, z = act:GetActionPoint():Get()
+    local act_pos = act:GetActionPoint()
+    if act_pos == nil then
+        return false
+    end
+
+	local x, y, z = act_pos:Get()
 	local mapent = FindClosestMapIconInRange("wx78_drone_scout", x, y, z, TUNING.SKILLS.WX78.MAPSCOUTSELECT_DETECTION_RADIUS, act.doer)
 	if mapent == nil then
 		return false, "NOTARGET"
@@ -6735,7 +6784,12 @@ ACTIONS.MAPSCOUT_MAP.maponly_checkvalidpos_fn = function(act)
         return false
 	end
 
-	local x, y, z = act:GetActionPoint():Get()
+    local act_pos = act:GetActionPoint()
+    if act_pos == nil then
+        return false
+    end
+
+	local x, y, z = act_pos:Get()
     local x1, y1, z1 = act.doer.Transform:GetWorldPosition()
     local validdist = act.target:GetDroneRange(act.doer)
     local dx, dz = x - x1, z - z1
@@ -6801,8 +6855,13 @@ ACTIONS.MAPDELIVER_MAP.maponly_checkvalidpos_fn = function(act)
         return false
     end
 
+    local act_pos = act:GetActionPoint()
+    if act_pos == nil then
+        return false
+    end
+
     local fx, fy, fz = mapent.Transform:GetWorldPosition()
-    local tx, ty, tz = act:GetActionPoint():Get()
+    local tx, ty, tz = act_pos:Get()
     if not IsFlyingPermittedFromPointToPoint(fx, fy, fz, tx, ty, tz) then
         return false
     end
@@ -6830,7 +6889,12 @@ ACTIONS.SWAPBODIES_MAP.maponly_checkvalidpos_fn = function(act)
         return false
     end
 
-    local x, y, z = act:GetActionPoint():Get()
+    local act_pos = act:GetActionPoint()
+    if act_pos == nil then
+        return false
+    end
+
+    local x, y, z = act_pos:Get()
 	local mapent = FindClosestMapIconInRange("wx78_backupbody", x, y, z, TUNING.SKILLS.WX78.REMOTEBODYSWAP_DETECTION_RADIUS, act.doer)
 	if mapent == nil then
         return false, "NOTARGET"
@@ -6938,7 +7002,12 @@ ACTIONS.VAULTORBTELEPORT_MAP.maponly_checkvalidpos_fn = function(act)
         return false
     end
 
-    local x, y, z = act:GetActionPoint():Get()
+    local act_pos = act:GetActionPoint()
+    if act_pos == nil then
+        return false
+    end
+
+    local x, y, z = act_pos:Get()
     local mapent = TheSim:FindEntities(x, y, z, TUNING.VAULT_ORB_REFINED_DETECTION_RADIUS, MAP_VAULTORB_MUST)[1]
     if mapent == nil then
         return false, "NOTARGET"
@@ -6960,7 +7029,12 @@ ACTIONS.VAULTORBTELEPORT_MAP.fn = function(act)
         return valid, reason
     end
 
-    if act.invobject.components.vaultorbteleporter == nil then
+    local item = act.invobject or act.target
+    if not item or not item.components.inventoryitem then
+        return false, "NOTARGET"
+    end
+
+    if item.components.vaultorbteleporter == nil then
         return false, "NOTARGET"
     end
 
@@ -6968,5 +7042,73 @@ ACTIONS.VAULTORBTELEPORT_MAP.fn = function(act)
         return false, "NOTARGET"
     end
 
-    return act.invobject.components.vaultorbteleporter:Activate(act.doer, mapent._target)
+    return item.components.vaultorbteleporter:Activate(act.doer, mapent._target)
+end
+
+ACTIONS.GOLF_START_AIMING.pre_action_cb = function(act)
+	if act.doer.HUD then
+		act.doer.HUD:CloseSpellWheel()
+	end
+end
+
+ACTIONS.GOLF_START_AIMING.fn = function(act)
+	if act.invobject and act.invobject.components.golfclub and
+		act.invobject.components.equippable and act.invobject.components.equippable:IsEquipped() and
+		act.invobject.components.inventoryitem and act.invobject.components.inventoryitem:IsHeldBy(act.doer)
+	then
+		return act.invobject.components.golfclub:StartAiming(act.doer, act.target)
+	end
+	return false
+end
+
+ACTIONS.GOLF_STOP_AIMING.fn = function(act)
+	local club = act.doer.components.inventory and act.doer.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+	if club and club.components.golfclub then
+		club.components.golfclub:StopAiming()
+	end
+	return true
+end
+
+ACTIONS.GOLF_START_CHARGING.pre_action_cb = function(act)
+	local pt = act:GetActionPoint()
+	if pt then
+		local inventory = act.doer.replica.inventory
+		local club = inventory and inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+		if club then
+			--server and predicted clients
+			if act.doer.components.locomotor then
+				local target = club.components.golfclub and club.components.golfclub:GetTarget()
+				act.doer.Transform:SetRotation((target or act.doer):GetAngleToPoint(pt))
+			end
+			--server and local clients
+			if act.doer.components.playercontroller and club.components.golfclub_reticule then
+				club.components.golfclub_reticule:StartCharging(act.doer, pt)
+			end
+		end
+	end
+end
+
+ACTIONS.GOLF_START_CHARGING.fn = function(act)
+	return true
+end
+
+ACTIONS.TERRAFORM_REMOVE.fn = function(act)
+    if act.invobject and act.target then
+        if act.invobject.components.terraformer and not act.invobject.components.terraformer.plow and act.target.components.terraformerremoveable then
+            return act.target.components.terraformerremoveable:TryToRemove(act.doer)
+        end
+    end
+end
+
+ACTIONS.CORRUPTNIGHTMARE.fn = function(act)
+    if act.invobject and act.invobject.components.corruption then
+        if act.invobject:HasTag("nomagiccast") then
+            return false
+        end
+        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer) then
+            return false, "ITEMMIMIC"
+        end
+
+        return act.invobject.components.corruption:CorruptEnt(act.target, act.doer)
+    end
 end
