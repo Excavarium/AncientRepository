@@ -721,7 +721,8 @@ function Controls:OnUpdate(dt)
         if controller_target ~= nil then
             local cmds, cmdsoffset
             local textblock = self.playeractionhint.text
-            if self.groundactionhint.shown and distsq(self.owner:GetPosition(), controller_target:GetPosition()) < 1.33 then
+            local keepgroundactionhint = ground_l and ground_l.action.keepgroundactionhint or ground_r and ground_r.action.keepgroundactionhint
+            if self.groundactionhint.shown and not keepgroundactionhint and distsq(self.owner:GetPosition(), controller_target:GetPosition()) < 1.33 then
                 --You're close to your target so we should combine the two text blocks.
                 cmds = ground_cmds
                 cmdsoffset = #cmds
@@ -787,7 +788,8 @@ function Controls:OnUpdate(dt)
                 -- target is highlighted but with no actions
                 -- -> suppress any ground action hints
                 -- -> use target's custom display name to show special action hint
-                if cmds ~= ground_cmds then
+                -- But keep it around if the action really wants it anyway.
+                if cmds ~= ground_cmds and not keepgroundactionhint then
                     self.groundactionhint:Hide()
                     self.groundactionhint:SetTarget(nil)
                 end
@@ -853,6 +855,19 @@ function Controls:OnUpdate(dt)
     --default offsets
     self.playeractionhint:SetScreenOffset(0,0)
     self.attackhint:SetScreenOffset(0,0)
+
+    -- Move tool tip to be behind player so it doesnt obstruct the reticule.
+    if self.owner.replica.inventory then
+        local handitem = self.owner.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+        local golfclub_reticule = handitem and handitem.components.golfclub_reticule
+        if self.playeractionhint.shown and golfclub_reticule and golfclub_reticule:GetTarget() then
+            local psx, psy = TheSim:GetScreenPos(self.owner.Transform:GetWorldPosition())
+            local sx, sy = TheSim:GetScreenPos(golfclub_reticule:GetTarget().Transform:GetWorldPosition())
+            local theta = math.atan2(sy - psy, psx - sx)
+            local w, h = self.playeractionhint.text:GetRegionSize()
+            self.playeractionhint:SetScreenOffset(math.cos(theta) * w, 100 - math.sin(theta) * h)
+        end
+    end
 
     --if we are showing both hints, make sure they don't overlap
     if self.attackhint.shown and self.playeractionhint.shown then

@@ -246,7 +246,7 @@ function ValidateSpawnPrefabRequest(user_id, prefab_name, skin_base, clothing_bo
 end
 
 -- NOTES(JBK): [Searchable "SN_SKILLSELECTION"] skillselection 
-function SpawnNewPlayerOnServerFromSim(player_guid, skin_base, clothing_body, clothing_hand, clothing_legs, clothing_feet, starting_item_skins, skillselection)
+function SpawnNewPlayerOnServerFromSim(player_guid, skin_base, clothing_body, clothing_hand, clothing_legs, clothing_feet, starting_item_skins, skillselection, skinoverrides)
     local player = Ents[player_guid]
     if player ~= nil then
         local skinner = player.components.skinner
@@ -256,6 +256,7 @@ function SpawnNewPlayerOnServerFromSim(player_guid, skin_base, clothing_body, cl
         skinner:SetClothing(clothing_feet)
         skinner:SetSkinName(skin_base)
         skinner:SetSkinMode("normal_skin")
+        skinner:SetSkinOverrides(skinoverrides)
 
         if player.OnNewSpawn ~= nil then
             player:OnNewSpawn(starting_item_skins)
@@ -408,7 +409,8 @@ function DownloadMods( server_listing )
             end
 
             if mod.all_clients_require_mod then
-                if not KnownModIndex:DoesModExist( mod.mod_name, mod.version ) then
+                --with no download to fetch the exact version, an installed compatible version has to do
+                if not KnownModIndex:DoesModExist( mod.mod_name, mod.version ) and (CanDownloadWorkshopMods() or not KnownModIndex:DoesModExist( mod.mod_name, mod.version, mod.version_compatible )) then
                     print("Failed to find mod "..mod.mod_name.." v:"..mod.version )
 
                     have_required_mods = false
@@ -496,8 +498,7 @@ end
 
 function JoinServer(server_listing, optional_password_override)
     local function send_response(password)
-        -- Just pass the guid in here, the network manager should have this listing
-        local start_worked = TheNet:JoinServerResponse( false, server_listing.guid, password )
+        local start_worked = TheNet:JoinServerResponse( false, server_listing.guid, password, server_listing.row )
 
         if start_worked then
             DisableAllDLC()
