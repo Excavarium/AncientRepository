@@ -205,6 +205,8 @@ return{
             TERRARIUM_COOLDOWN = "UNABLE TO INSTALL ITEM. MISSING TREE COMPONENT",
             NOTAMONKEY = "CEASE YOUR RIDICULOUS MOUTH NOISES, LESSER HUMANOID",
             QUEENBUSY = "I WILL NOT BE IGNORED",
+            CARNIVALGAME_GOLFGAME_NOTREADY = "MISSING COMPONENT: FLAGHOLE",
+            KINGSTAFF_COOLDOWN = "ERROR: COMPONENT STUCK", -- can't give it a new gem because it's on cooldown
         },
         GIVE_TACKLESKETCH =
 		{
@@ -1253,6 +1255,17 @@ return{
     ANNOUNCE_HEALINGSALVE_FUMAROLEBUFF_DONE = "HEAT SHIELD FAILING",--fire immunity expired
     ANNOUNCE_SECURITY_PULSE_FOLLOWING = "WARNING, ATTACHMENT FORMED", -- Security spark attached to us due to us holding Waymark Compass.
 
+    -- Rifts 8
+
+    -- after the final fight when Charlie goes MIA and isn't the night monster anymore
+	ANNOUNCE_GRUE_NOCHARLIE = "THREAT DETECTED",
+	ANNOUNCE_GRUE_NOCHARLIE_ATTACK = "ERROR: UNKNOWN ATTACKER",
+--fallback to speech_wilson.lua 	ANNOUNCE_GRUE_NOCHARLIE_MISSED = "only_used_by_winona", --winona specific
+
+	ANNOUNCE_STOMP_SHROUDEN = "YOU HAD YOUR CHANCE TO SUBMIT TO ME",
+
+    ANNOUNCE_DREADSTONE_SPIKE_EXPLODING = "FORMATIONS DESTABILIZED BY ENLIGHTENMENT PROXIMITY", -- exploding because of enlightenment.
+
 	BATTLECRY =
 	{
 		GENERIC = "I WILL DESTROY YOU",
@@ -1702,7 +1715,12 @@ return{
 		CAVE_BANANA = "MORE CARBON",
 		CAVE_BANANA_COOKED = "THESE FOOD THINGS ARE SO TEDIOUS",
 		CAVE_BANANA_TREE = "LIFE FINDS A WAY, UNFORTUNATELY",
-		ROCKY = "MY SHELL IS NICER",
+        ROCKY =
+        {
+            GENERIC = "MY SHELL IS NICER",
+            BOULDER = "LUMPY", -- in boulder state, it looks like a normal boulder
+            ACID = "HA HA! EXOSKELETON DOWNGRADED", -- in acid form
+        },
 
 		COMPASS =
 		{
@@ -1719,7 +1737,11 @@ return{
 
         HOUNDSTOOTH = "MASTICATING EDGE",
         ARMORSNURTLESHELL = "HOUSING MODULE",
-        BAT = "FLYING RAT",
+        BAT =
+        {
+            GENERIC = "FLYING RAT",
+            ACID = "ERRATIC BEHAVIOR DETECTED", -- in acid form
+        },
         BATBAT = "AHHAHA! FREE POWER!",
         BATWING = "FLYING MECHANISM",
         BATWING_COOKED = "BROKEN FLYING MECHANISM",
@@ -2190,6 +2212,11 @@ return{
         CHESSPIECE_WAGBOSS_LUNAR = "WHAT WENT WRONG FOR US?",
         CHESSPIECE_YOTH = "THE ONLY HORSE I EVER LIKED",
         CHESSPIECE_VAULT_PILLAR_GUARD = "THIS VERSION IS PATHETIC",
+        CHESSPIECE_BATBOSS_SHADOW = "IT HAD A DISGUSTING HABIT",
+        CHESSPIECE_ROCKYBOSS_SHADOW = "DID NOT LIVE UP TO POTENTIAL",
+        CHESSPIECE_WORMBOSS_SHADOW = "IN THE END, IT ATE NOTHING BUT DIRT",
+        CHESSPIECE_CHARLIE_BOSS = "BOOHOO, YOU DID IT TO YOURSELF",
+        CHESSPIECE_SHROUDEN = "IT THOUGHT IT WAS A GOD. HAHAHA",
 
         CHESSJUNK1 = "EX-AUTOMATON",
         CHESSJUNK2 = "EX-AUTOMATON",
@@ -2231,6 +2258,7 @@ return{
         CRITTER_PERDLING = "...YOU MAY LIVE",
 		CRITTER_LUNARMOTHLING = "IT HAS NO OFFENSIVE USAGE, YET I AM COMPELLED TO KEEP IT",
         CRITTER_BULBIN = "CORRUPTION DETECTED. EXCELLENT",
+        CRITTER_EETS = "YES, JUMP AND SPIN FOR MY ENTERTAINMENT, FOOL",
 
 		CROW =
 		{
@@ -3507,6 +3535,7 @@ return{
 			CHARGING = "GATEWAY CHARGING",
 			DESTABILIZING = "IT WAS A DEATHTRAP ALL ALONG",
 			COOLDOWN = "COOLDOWN IN PROGRESS",
+            RITUAL_SUMMONING = "HOW DARE YOU STARE AT ME", -- ritual is actively summoning, shrouden has appeared through the gate in the form of the eye, its looks between players, and charlie.
         },
         ATRIUM_KEY = "FOR ACTIVATING, NOT UNLOCKING",
 		LIFEINJECTOR = "I HAVE MIXED FEELINGS ABOUT THIS",
@@ -4101,8 +4130,8 @@ return{
 		OCEANFISHINGLURE_SPINNER_GREEN = "PERFORMS OPTIMALLY AT DUSK",
 		OCEANFISHINGLURE_SPINNER_BLUE = "PERFORMS OPTIMALLY AT NIGHT",
 		OCEANFISHINGLURE_SPOON_RED = "PERFORMS OPTIMALLY IN DAYLIGHT",
-		OCEANFISHINGLURE_SPOON_GREEN = "PERFORMS OPTIMALLY IN DAYLIGHT",
-		OCEANFISHINGLURE_SPOON_BLUE = "PERFORMS OPTIMALLY IN DAYLIGHT",
+		OCEANFISHINGLURE_SPOON_GREEN = "PERFORMS OPTIMALLY AT DUSK",
+		OCEANFISHINGLURE_SPOON_BLUE = "PERFORMS OPTIMALLY AT NIGHT",
 		OCEANFISHINGLURE_HERMIT_RAIN = "FISHING IN RAIN... THE HORROR...",
 		OCEANFISHINGLURE_HERMIT_SNOW = "I HATE FISHING. I HATE SNOW",
 		OCEANFISHINGLURE_HERMIT_DROWSY = "IT MAKES ORGANICS EVEN MORE STUPID",
@@ -4527,6 +4556,8 @@ return{
 			LORE1 = "INTEGRITY CHECK FAILED. CORRUPTION DETECTED",
 			LORE2 = "HA... HA?",
 			LORE3 = "YOU DARE TAKE UP ARMS AGAINST A SUPERIOR BEING?",
+            --
+            LORE1_STALKER = "HA HA! IT'S YOU!", -- when the stalker/king is with you, different inspect for the king statue!
 		},
 
         ARCHIVE_RESONATOR = {
@@ -4779,6 +4810,7 @@ return{
 		},
 		CARNIVALDECOR_FIGURE_KIT = "ITS CONTENTS HAVE BEEN OBFUSCATED",
 		CARNIVALDECOR_FIGURE_KIT_SEASON2 = "ITS CONTENTS HAVE BEEN OBFUSCATED",
+		CARNIVALDECOR_FIGURE_KIT_SEASON3 = "ITS CONTENTS HAVE BEEN OBFUSCATED",
 
         CARNIVAL_BALL = "COMMENCE \"FUN\"", --unimplemented
 		CARNIVAL_SEEDPACKET = "MEAGER SUSTENANCE",
@@ -5361,7 +5393,12 @@ return{
 		SHADOWTHRALL_WINGS = "COME CLOSER SO I CAN PUNCH YOU",
 		SHADOWTHRALL_MOUTH = "KEEP SMILING...",
 
-        CHARLIE_NPC = "ALL THAT POWER AND SHE STILL CLINGS TO THAT ORGANIC FORM",
+        CHARLIE_NPC =
+        {
+            GENERIC = "ALL THAT POWER AND SHE STILL CLINGS TO THAT ORGANIC FORM", -- scene 1, first appearance of charlie to repair the gateway
+            SCENE2 = "SUSPICIOUS USER IDENTIFIED. CATASTROPHIC OUTCOME LIKELY. ASSESSMENT: FUN", -- scene 2, charlie appears again to socket the key and place the ritual down
+            SCENE3 = "SUSPICIOUS USER IDENTIFIED. CATASTROPHIC OUTCOME LIKELY. ASSESSMENT: FUN", -- scene 3, the gateway has both keys, and the sacrifice pieces are set up in the ritual, she appears to tell you to activate it
+        },
         CHARLIE_HAND = "OFFERING REQUIRED",
 
         NITRE_FORMATION = "IT GREW, BUT NOT IN A GROSS ORGANIC WAY",
@@ -6222,7 +6259,7 @@ return{
             PICKED = "IT HAS BEEN CLAIMED", -- No more keystone on it, we already took it, or someone else did.
         },
         VAULT_ORB_REFINED = "TELEPORTATION COMPONENT",
-        VAULT_PILLAR_GUARD_PIECE = "SENTRY UNIT CORE COMPLETED",
+        VAULT_PILLAR_GUARD_PIECE = "SENTRY UNIT COMPONENT",
         VAULT_REFINER_PEDESTAL = "YOU'VE CHANGED",
 
         VAULT_COMPASS =
@@ -6233,7 +6270,103 @@ return{
         },
 
         CEILING_ROPE = "PRIMITIVE BUT NECESSARY",
-        VAULT_KEY_EXIT = "NO RETURN FUNCTION",
+        VAULT_KEY_EXIT = "NO RETURN FUNCTION",--There's no where to tie a rope. Exit, but no re-entry.
+
+        -- Crow Carnival 2026
+
+        CARNIVALGAME_GOLFGAME_KIT_EASY = "HOW INSULTING",
+        CARNIVALGAME_GOLFGAME_KIT_MEDIUM = "STANDARD DIFFICULTY SETTING",
+        CARNIVALGAME_GOLFGAME_KIT_HARD = "HARD MODE... FOR FLESHLINGS",
+        CARNIVALGAME_GOLFGAME_KIT_DIY = "CUSTOM COURSE GENERATOR",
+
+        CARNIVALGAME_GOLF_TEE =
+        {
+            GENERIC = "INPUT REQUIRED: TOKEN",  -- Ready to take a game token, reference other carnival game strings
+            PLAYING = "GAME IN PROGRESS", -- The game is active and in play
+            INACTIVE = "MISSING COMPONENT: FLAGHOLE", -- The game token slot is covered, due to the course not being fully complete (e.g. hole marker isn't placed)
+        },
+        CARNIVALGAME_GOLF_HOLE = "OBJECTIVE IDENTIFIED",
+
+        CARNIVALGAME_GOLF_TEE_KIT = "ORIGIN POINT",
+        CARNIVALGAME_GOLF_HOLE_KIT = "DESTINATION POINT",
+
+        CARNIVALGAME_GOLFCLUB = "MINIMAL ENERGY INPUT REQUIRED FOR SUCCESSFUL OPERATION",
+        CARNIVALGAME_GOLFBALL = "OPTIMIZED FOR ROLLING BEHAVIOR",
+
+        CARNIVALGAME_GOLFPROP_FENCE = "BALL CONTAINMENT SYSTEM",
+
+        CARNIVALGAME_GOLFPROP_SPINNER = "ANGULAR MOTION SYSTEM FOR INCREASED CHAOS", -- All 4 spin plates(size/rotation) use the same inspect
+        CARNIVALGAME_GOLFPROP_CUTOUT = "FUNCTION: INTERRUPT BALL TRAJECTORY, IRRITATE ME", -- All 10 prop wood cutouts use the same inspect
+        CARNIVALGAME_GOLFPROP_MOVINGWALL = "PATTERN DETECTED, TIMING CRITICAL", -- All colored moving walls use this space inspect
+
+        CARNIVALGAME_GOLFPROP_WORMHOLE = "SYSTEM BYPASSES COURSE STRUCTURE", -- a fake wormhole, that lets the ball travel to another random wormhole
+
+        CARNIVALGAME_GOLFPROP_SPRING = "PATH OVERRIDE DEVICE", -- spring that pops up to launch the ball
+
+        CARNIVALGAME_GOLFPROP_FAN = "AIRFLOW DEVICE. ANNOYING", -- fan that blows wind and pushes in a direction
+
+        -- Rifts 8
+
+        ROCKY_BOSS =
+        {
+            GENERIC = "IMPRESSIVE EXOSKELETON",
+            BOULDER = "IRREGULAR GEOLOGICAL FORMATION", -- in boulder form
+            ACID = "CORROSIVE DEPOSITS ACCUMULATING",
+        },
+		ROCKY_BOSS_SHADOW = "EXOSKELETON CORRUPTED",
+        BAT_BOSS =
+        {
+            GENERIC = "OVERGROWN BLOODSUCKING FLYING FLESHSACK",
+            ACID = "THREAT LEVEL ELEVATED",
+        },
+		BAT_BOSS_SHADOW = "INFECTED WITH SHADOW DISEASE",
+
+        BATBOSSCAVE =
+        {
+            GENERIC = "DISGUSTING FLESHY OCCUPANT DETECTED", -- boss bat is inside,
+            VACANT = "NO LIFEFORMS DETECTED", -- boss bat is not inside anymore
+        },
+
+        WORM_BOSS_SHADOW = "VILE FLESH ROTTED INSIDE AND OUT",
+
+        ARMOR_ROCKY = "MORE ARMOR? YES",
+        BAT_BOSSCORPSEHAT = "I MAY NEVER RECOVER FROM WEARING THAT ON MY HEAD",
+
+        ATRIUM_RITUAL_ORGAN_ROCKY =
+        {
+            GENERIC = "LETHAL IMPLEMENT DETACHED",
+            IN_RITUAL = "DISGUSTING PAYLOAD SECURED", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+        ATRIUM_RITUAL_ORGAN_BAT =
+        {
+            GENERIC = "GROTESQUE VOCAL MODULE",
+            IN_RITUAL = "DISGUSTING PAYLOAD SECURED", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+        ATRIUM_RITUAL_ORGAN_WORM =
+        {
+            GENERIC = "POOPSACK FROM A FLESHSACK",
+            IN_RITUAL = "DISGUSTING PAYLOAD SECURED`", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+
+		CHARLIE_BOSS = "HOST CORRUPTED",
+		SHROUDEN =
+		{
+			GENERIC = "KNEEL BEFORE ME. I MAY PERMIT YOUR ESCAPE",
+			PUDDLE = "PREPARE TO BE STEPPED ON, STUPID EYE",
+		},
+
+        CHARLIEARENA_SPIKE = "OBSTACLES",
+
+        KING_CANE =
+        {
+            GENERIC = "FIT FOR A KING... ME", -- has a gem slotted in
+            EMPTY = "MISSING COMPONENT", -- can socket a gem inside (can be heavy on hint)
+        },
+        QUEEN_TORCH = "ONLY FLESHBAGS FEAR DARKNESS. SO IT'S MINE",
+        
+        CHARLIEARENA_TELEPORTER = "LEAVE NO ITEMS BEHIND",
+
+        MASK_CHARLIE_BOSSHAT = "SPECIMEN DEFEATED. TROPHY ACQUIRED",
     },
 
     DESCRIBE_GENERIC = "ERROR: UNKNOWN",
@@ -6258,6 +6391,4 @@ return{
     },
 
     WENDY_SKILLTREE_EASTEREGG = "only_used_by_wendy",
-
-
 }

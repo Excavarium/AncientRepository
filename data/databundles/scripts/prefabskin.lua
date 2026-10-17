@@ -756,6 +756,9 @@ lighter_clear_fn = function(inst) basic_clear_fn(inst, "lighter" ) end
 spear_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "swap_spear" ) end
 spear_clear_fn = function(inst) basic_clear_fn(inst, "swap_spear" ) end
 
+waterballoon_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "swap_waterballoon" ) end
+waterballoon_clear_fn = function(inst) basic_clear_fn(inst, "swap_waterballoon" ) end
+
 spear_wathgrithr_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "swap_spear_wathgrithr" ) end
 spear_wathgrithr_clear_fn = function(inst) basic_clear_fn(inst, "swap_spear_wathgrithr" ) end
 spear_wathgrithr_lightning_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "spear_wathgrithr_lightning" ) end
@@ -1698,6 +1701,25 @@ armor_lunarplant_husk_clear_fn = function(inst) basic_clear_fn(inst, "armor_luna
 wagdrone_rolling_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "wagdrone_rolling") end
 wagdrone_rolling_clear_fn = function(inst) basic_clear_fn(inst, "wagdrone_rolling") end
 
+thurible_init_fn = function(inst, build_name)
+    basic_init_fn(inst, build_name, "thurible")
+    if inst._body then
+        inst._body.AnimState:SetSkin(build_name, "thurible")
+    end
+end
+thurible_clear_fn = function(inst)
+    basic_clear_fn(inst, "thurible")
+    if inst._body then
+        inst._body.AnimState:SetBuild("thurible")
+    end
+end
+
+voidclothhat_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "hat_voidcloth") end
+voidclothhat_clear_fn = function(inst) basic_clear_fn(inst, "hat_voidcloth") end
+
+armor_voidcloth_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "armor_voidcloth") end
+armor_voidcloth_clear_fn = function(inst) basic_clear_fn(inst, "armor_voidcloth") end
+
 --------------------------------------------------------------------------
 --[[ rabbithouse skin functions ]]
 --------------------------------------------------------------------------
@@ -2459,6 +2481,17 @@ function critter_bulbin_builder_clear_fn(inst)
     inst.linked_skinname = nil
 end
 
+function critter_eets_init_fn(inst, build_name)
+    basic_init_fn(inst, build_name, "eets_basic")
+end
+function critter_eets_clear_fn(inst)
+    -- No default build fallback.
+    inst.persists = false
+    inst:DoStaticTaskInTime(0, inst.Remove)
+end
+function critter_eets_builder_clear_fn(inst)
+    inst.linked_skinname = nil
+end
 
 --------------------------------------------------------------------------
 --[[ Mini Sign skin functions ]]

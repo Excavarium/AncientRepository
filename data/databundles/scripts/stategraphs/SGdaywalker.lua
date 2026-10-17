@@ -21,10 +21,7 @@ local function IsPlayerMelee(data) --"attacked" event data
 		and data.attacker ~= nil
 		and data.attacker:HasTag("player")
 		and (data.damage or 0) > 0
-		and (data.weapon == nil or (
-				(data.weapon.components.weapon == nil or data.weapon.components.weapon.projectile == nil) and
-				data.weapon.components.projectile == nil
-			))
+		and not IsRangedWeapon(data.weapon)
 end
 
 local function hit_recovery_skip_cooldown_fn(inst, last_t, delay)
@@ -238,6 +235,12 @@ local function DoAOEAttack(inst, dist, radius, heavymult, mult, forcelanded, tar
 			then
 			local range = radius + v:GetPhysicsRadius(0)
 			if v:GetDistanceSqToPoint(x, y, z) < range * range and inst.components.combat:CanTarget(v) then
+				if targets then
+					targets[v] = true
+					if mult and v.components.rider and v.components.rider.mount then
+						targets[v.components.rider.mount] = true
+					end
+				end
 				inst.components.combat:DoAttack(v)
 				if mult ~= nil then
 					local strengthmult = (v.components.inventory ~= nil and v.components.inventory:ArmorHasTag("heavyarmor") or v:HasTag("heavybody")) and heavymult or mult
@@ -248,9 +251,6 @@ local function DoAOEAttack(inst, dist, radius, heavymult, mult, forcelanded, tar
 						strengthmult = MAX_SIDE_TOSS_STR + (strengthmult - MAX_SIDE_TOSS_STR) * k * k
 					end
 					v:PushEvent("knockback", { knocker = inst, radius = radius + dist + 3, strengthmult = strengthmult, forcelanded = forcelanded })
-				end
-				if targets ~= nil then
-					targets[v] = true
 				end
 			end
 		end

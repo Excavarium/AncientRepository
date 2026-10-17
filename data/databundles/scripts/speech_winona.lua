@@ -205,6 +205,8 @@ return{
             TERRARIUM_COOLDOWN = "Guess we gotta wait for the tree to grow back before we can give it anything.",
             NOTAMONKEY = "I can't make sense of all yer hollerin'!",
             QUEENBUSY = "I'll wait, she's got work to do.",
+            CARNIVALGAME_GOLFGAME_NOTREADY = "The course ain't set up yet!",
+            KINGSTAFF_COOLDOWN = "It won't budge.", -- can't give it a new gem because it's on cooldown
         },
         GIVE_TACKLESKETCH =
 		{
@@ -1259,6 +1261,17 @@ return{
     ANNOUNCE_HEALINGSALVE_FUMAROLEBUFF_DONE = "I think the Thermal Balm is wearin' off.",--fire immunity expired
     ANNOUNCE_SECURITY_PULSE_FOLLOWING = "Hey there, little tagalong!", -- Security spark attached to us due to us holding Waymark Compass.
 
+    -- Rifts 8
+
+    -- after the final fight when Charlie goes MIA and isn't the night monster anymore
+	ANNOUNCE_GRUE_NOCHARLIE = "Who is that?",
+	ANNOUNCE_GRUE_NOCHARLIE_ATTACK = "Yeow! Rude!",
+	ANNOUNCE_GRUE_NOCHARLIE_MISSED = "Ah! I don't know that move!", --winona specific
+
+	ANNOUNCE_STOMP_SHROUDEN = "I call this lil' number the Evil Eye Stompin' Jig!",
+
+    ANNOUNCE_DREADSTONE_SPIKE_EXPLODING = "Don't think these evil rocks agree with my state of mind!", -- exploding because of enlightenment.
+
 	BATTLECRY =
 	{
 		GENERIC = "I'll demolish you!",
@@ -1708,7 +1721,12 @@ return{
 		CAVE_BANANA = "Everything since I got here has been bananas.",
 		CAVE_BANANA_COOKED = "Caramelized banana's the tops.",
 		CAVE_BANANA_TREE = "That's, uh, a banana tree.",
-		ROCKY = "Easy there, slugger!",
+        ROCKY =
+        {
+            GENERIC = "Easy there, slugger!",
+            BOULDER = "Mhm, yep. That's a rock.", -- in boulder state, it looks like a normal boulder
+            ACID = "That acid rain ain't a joke.", -- in acid form
+        },
 
 		COMPASS =
 		{
@@ -1725,7 +1743,11 @@ return{
 
         HOUNDSTOOTH = "Sure hope no one comes back for it.",
         ARMORSNURTLESHELL = "Go ahead, give'it a punch.",
-        BAT = "Flyin' rodent.",
+        BAT =
+        {
+            GENERIC = "Flyin' rodent.",
+            ACID = "It's some sorta rabid!", -- in acid form
+        },
         BATBAT = "Ha! Clever.",
         BATWING = "Surprisingly meaty.",
         BATWING_COOKED = "Meat's meat.",
@@ -2196,6 +2218,11 @@ return{
         CHESSPIECE_WAGBOSS_LUNAR = "Weirdest thing I ever saw. And I seen a lotta weird stuff.",
         CHESSPIECE_YOTH = "There were good and bad times with this fella.",
         CHESSPIECE_VAULT_PILLAR_GUARD = "Hey there, shorty!",
+        CHESSPIECE_BATBOSS_SHADOW = "Nasty bloodsucker.",
+        CHESSPIECE_ROCKYBOSS_SHADOW = "A tough customer for sure.",
+        CHESSPIECE_WORMBOSS_SHADOW = "Like a regular giant worm wasn't bad enough.",
+        CHESSPIECE_CHARLIE_BOSS = "Oh, Charlie...",
+        CHESSPIECE_SHROUDEN = "Good riddance.",
 
         CHESSJUNK1 = "A heap of spare parts.",
         CHESSJUNK2 = "A heap of spare parts.",
@@ -2237,6 +2264,7 @@ return{
         CRITTER_PERDLING = "Hey there, feathers.",
 		CRITTER_LUNARMOTHLING = "You sure are fragile, aren'tcha lil fella?",
         CRITTER_BULBIN = "You're a sweet little fella, but your breath is terrible.",
+        CRITTER_EETS = "Quite a bouncy fella.",
 
 		CROW =
 		{
@@ -3513,6 +3541,7 @@ return{
 			CHARGING = "It's gearing up for something.",
 			DESTABILIZING = "I don't think we oughta be here when it goes off!",
 			COOLDOWN = "It won't be running again for awhile.",
+            RITUAL_SUMMONING = "What the heck is that eye, Charlie? What have you got us into?", -- ritual is actively summoning, shrouden has appeared through the gate in the form of the eye, its looks between players, and charlie.
         },
         ATRIUM_KEY = "Some sort of old power source.",
 		LIFEINJECTOR = "I've never taken a sick day in my life.",
@@ -4533,6 +4562,8 @@ return{
 			LORE1 = "It's like he sprung some sorta demonic oil leak.",
 			LORE2 = "Someone used up the whole can of bug spray.",
 			LORE3 = "They sure don't want nobody leavin'.",
+            --
+            LORE1_STALKER = "Frankly, I don't see the resemblance.", -- when the stalker/king is with you, different inspect for the king statue!
 		},
 
         ARCHIVE_RESONATOR = {
@@ -4785,6 +4816,7 @@ return{
 		},
 		CARNIVALDECOR_FIGURE_KIT = "Alright, I gotta know what's inside...",
 		CARNIVALDECOR_FIGURE_KIT_SEASON2 = "Alright, I gotta know what's inside...",
+		CARNIVALDECOR_FIGURE_KIT_SEASON3 = "Alright, I gotta know what's inside...",
 
         CARNIVAL_BALL = "You can't beat a good old rubber ball.", --unimplemented
 		CARNIVAL_SEEDPACKET = "Looks like a bag of bird food.",
@@ -5367,7 +5399,12 @@ return{
 		SHADOWTHRALL_WINGS = "Must be one of the higher-ups. Ha...",
 		SHADOWTHRALL_MOUTH = "Somebody's got a big mouth!",
 
-        CHARLIE_NPC = "Charlie, wait!!",
+        CHARLIE_NPC =
+        {
+            GENERIC = "Charlie, wait!!", -- scene 1, first appearance of charlie to repair the gateway
+            SCENE2 = "Why are you doing all this, Charlie?!", -- scene 2, charlie appears again to socket the key and place the ritual down
+            SCENE3 = "Why are you doing all this, Charlie?!", -- scene 3, the gateway has both keys, and the sacrifice pieces are set up in the ritual, she appears to tell you to activate it
+        },
         CHARLIE_HAND = "You want something, huh?",
 
         NITRE_FORMATION = "Oh, I've got big plans for that!",
@@ -6228,7 +6265,7 @@ return{
             PICKED = "Yup, it's empty.", -- No more keystone on it, we already took it, or someone else did.
         },
         VAULT_ORB_REFINED = "I've seen something like this before.",
-        VAULT_PILLAR_GUARD_PIECE = "Looks like the core of that lumbering tower of bricks.",
+        VAULT_PILLAR_GUARD_PIECE = "Looks like that lumbering tower of bricks needs this to lumber.",
         VAULT_REFINER_PEDESTAL = "Never seen anything like it, but I'll make it work.",
 
         VAULT_COMPASS =
@@ -6239,7 +6276,103 @@ return{
         },
 
         CEILING_ROPE = "Good to have a way out.",
-        VAULT_KEY_EXIT = "Well, looks like it's exit only.",
+        VAULT_KEY_EXIT = "Well, looks like it's exit only.",--There's no where to tie a rope. Exit, but no re-entry.
+
+        -- Crow Carnival 2026
+
+        CARNIVALGAME_GOLFGAME_KIT_EASY = "Let's just ease into the game.",
+        CARNIVALGAME_GOLFGAME_KIT_MEDIUM = "It should be manageable.",
+        CARNIVALGAME_GOLFGAME_KIT_HARD = "This one might get tricky.",
+        CARNIVALGAME_GOLFGAME_KIT_DIY = "One Winona special, comin' right up!",
+
+        CARNIVALGAME_GOLF_TEE =
+        {
+            GENERIC = "Nothin's free in life. This thing needs a token!",  -- Ready to take a game token, reference other carnival game strings
+            PLAYING = "All paid up. Let's play!", -- The game is active and in play
+            INACTIVE = "The course ain't set up yet!", -- The game token slot is covered, due to the course not being fully complete (e.g. hole marker isn't placed)
+        },
+        CARNIVALGAME_GOLF_HOLE = "I've been known to sink a putt or two.",
+
+        CARNIVALGAME_GOLF_TEE_KIT = "Where should we tee off?",
+        CARNIVALGAME_GOLF_HOLE_KIT = "Where should we put the ol' flaghole?",
+
+        CARNIVALGAME_GOLFCLUB = "My trusty putter.",
+        CARNIVALGAME_GOLFBALL = "Built to roll.",
+
+        CARNIVALGAME_GOLFPROP_FENCE = "Easier than chasin' balls all day.",
+
+        CARNIVALGAME_GOLFPROP_SPINNER = "Don't stare at it too long.", -- All 4 spin plates(size/rotation) use the same inspect
+        CARNIVALGAME_GOLFPROP_CUTOUT = "You're just gonna stand there all day, aintcha?", -- All 10 prop wood cutouts use the same inspect
+        CARNIVALGAME_GOLFPROP_MOVINGWALL = "Goes up, goes down. Simple enough.", -- All colored moving walls use this space inspect
+
+        CARNIVALGAME_GOLFPROP_WORMHOLE = "Here goes nothin'...", -- a fake wormhole, that lets the ball travel to another random wormhole
+
+        CARNIVALGAME_GOLFPROP_SPRING = "Pop goes the golf ball.", -- spring that pops up to launch the ball
+
+        CARNIVALGAME_GOLFPROP_FAN = "That is one pesky fan.", -- fan that blows wind and pushes in a direction
+
+        -- Rifts 8
+
+        ROCKY_BOSS =
+        {
+            GENERIC = "Quit snappin'! Someone could lose their head!",
+            BOULDER = "That there's a funny lookin' boulder.", -- in boulder form
+            ACID = "Hm. It's gettin' all crusty.",
+        },
+		ROCKY_BOSS_SHADOW = "I guess he's a lil intimidating.",
+        BAT_BOSS =
+        {
+            GENERIC = "Ya flying flea-bag!",
+            ACID = "Ya big ol' crusty bat!",
+        },
+		BAT_BOSS_SHADOW = "Thought you were already a creature of the night.",
+
+        BATBOSSCAVE =
+        {
+            GENERIC = "Somethin' in there.", -- boss bat is inside,
+            VACANT = "Ain't nobody home?", -- boss bat is not inside anymore
+        },
+
+        WORM_BOSS_SHADOW = "Betcha thought the black would be more slimming.",
+
+        ARMOR_ROCKY = "Feel a lil' bad wearin' the poor fella's shell.",
+        BAT_BOSSCORPSEHAT = "Who the heck thought of wearin' it like a hat?!",
+
+        ATRIUM_RITUAL_ORGAN_ROCKY =
+        {
+            GENERIC = "I'm sure glad it can't snap at me with this no more.",
+            IN_RITUAL = "Hope you know what you're doing, sis.", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+        ATRIUM_RITUAL_ORGAN_BAT =
+        {
+            GENERIC = "This supposed to be what makes all that noise?",
+            IN_RITUAL = "Hope you know what you're doing, sis.", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+        ATRIUM_RITUAL_ORGAN_WORM =
+        {
+            GENERIC = "Oh man, that's nasty.",
+            IN_RITUAL = "Hope you know what you're doing, sis.", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+
+		CHARLIE_BOSS = "I know you're in there, Charlie!",
+		SHROUDEN =
+		{
+			GENERIC = "I'm gonna give you a whuppin' for what you done to Charlie!",
+			PUDDLE = "Keep starin' and I'll stomp on ya!",
+		},
+
+        CHARLIEARENA_SPIKE = "Where the heck did that come from?",
+
+        KING_CANE =
+        {
+            GENERIC = "Ready for action!", -- has a gem slotted in
+            EMPTY = "It's missin' a gem.", -- can socket a gem inside (can be heavy on hint)
+        },
+        QUEEN_TORCH = "What the heck keeps it burnin'?",
+        
+        CHARLIEARENA_TELEPORTER = "Better not leave nothin' behind.",
+
+        MASK_CHARLIE_BOSSHAT = "It didn't have to be that way, Charlie.",
     },
 
     DESCRIBE_GENERIC = "Incredible! I have no idea what that is.",
@@ -6264,6 +6397,4 @@ return{
     },
 
     WENDY_SKILLTREE_EASTEREGG = "only_used_by_wendy",
-
-
 }

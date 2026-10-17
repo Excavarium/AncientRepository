@@ -205,6 +205,8 @@ return{
             TERRARIUM_COOLDOWN = "Oh that won't do, the intended arborous recipient appears to be missing.",
             NOTAMONKEY = "I believe they're trying to communicate.",
             QUEENBUSY = "She is occupied with other matters at the moment.",
+            CARNIVALGAME_GOLFGAME_NOTREADY = "The mini-golf course requires at least a flaghole to be playable.",
+            KINGSTAFF_COOLDOWN = "The gem is quite stuck.", -- can't give it a new gem because it's on cooldown
         },
         GIVE_TACKLESKETCH =
 		{
@@ -1253,6 +1255,17 @@ return{
     ANNOUNCE_HEALINGSALVE_FUMAROLEBUFF_DONE = "It would seem I am vulnerable to the flames once more.",--fire immunity expired
     ANNOUNCE_SECURITY_PULSE_FOLLOWING = "It is attracted to this device.", -- Security spark attached to us due to us holding Waymark Compass.
 
+    -- Rifts 8
+
+    -- after the final fight when Charlie goes MIA and isn't the night monster anymore
+	ANNOUNCE_GRUE_NOCHARLIE = "A noise! But no floral scent?",
+	ANNOUNCE_GRUE_NOCHARLIE_ATTACK = "OUCH! Who dares?!",
+--fallback to speech_wilson.lua 	ANNOUNCE_GRUE_NOCHARLIE_MISSED = "only_used_by_winona", --winona specific
+
+	ANNOUNCE_STOMP_SHROUDEN = "What a truly horrid sound.",
+
+    ANNOUNCE_DREADSTONE_SPIKE_EXPLODING = "The formation is reacting to my mental state.", -- exploding because of enlightenment.
+
 	BATTLECRY =
 	{
 		GENERIC = "Combat!",
@@ -1702,7 +1715,12 @@ return{
 		CAVE_BANANA = "All of them are genetically identical.",
 		CAVE_BANANA_COOKED = "Somewhat better.",
 		CAVE_BANANA_TREE = "The seeds must have fallen down a sinkhole.",
-		ROCKY = "Their carapace is made of rocks.",
+        ROCKY =
+        {
+            GENERIC = "Their carapace is made of rocks.",
+            BOULDER = "A large sedimentary rock.", -- in boulder state, it looks like a normal boulder
+            ACID = "The acid rain is demineralizing its exoskeleton.", -- in acid form
+        },
 
 		COMPASS =
 		{
@@ -1719,7 +1737,11 @@ return{
 
         HOUNDSTOOTH = "Made of calcium and brimstone.",
         ARMORSNURTLESHELL = "It is quite capacious.",
-        BAT = "A flying mammal.",
+        BAT =
+        {
+            GENERIC = "A flying mammal.",
+            ACID = "The acid rain has induced a frenzied state.", -- in acid form
+        },
         BATBAT = "Interesting. This weapon appears to be alive.",
         BATWING = "Technically edible.",
         BATWING_COOKED = "Technically edible.",
@@ -2190,6 +2212,11 @@ return{
         CHESSPIECE_WAGBOSS_LUNAR = "This dreadful amalgamation was unprecedented.",
         CHESSPIECE_YOTH = "This mechanical knight demonstrates loyalty to whomever dons the garb of its charge.",
         CHESSPIECE_VAULT_PILLAR_GUARD = "It proved a marvel of ancient architecture.",
+        CHESSPIECE_BATBOSS_SHADOW = "Its cursed form did not affect its thirst for blood.",
+        CHESSPIECE_ROCKYBOSS_SHADOW = "Destructive and deadly in every form.",
+        CHESSPIECE_WORMBOSS_SHADOW = "A creature with a bottomless appetite.",
+        CHESSPIECE_CHARLIE_BOSS = "It seems she got more than she bargained for.",
+        CHESSPIECE_SHROUDEN = "Will it ever be truly destroyed?",
 
         CHESSJUNK1 = "The magician's unfinished projects?",
         CHESSJUNK2 = "The magician's unfinished projects?",
@@ -2231,6 +2258,7 @@ return{
         CRITTER_PERDLING = "What a handsome poult you are!",
 		CRITTER_LUNARMOTHLING = "Who wuvs their widdle specimen?",
         CRITTER_BULBIN = "Are you animal or vegetable, dear?",
+        CRITTER_EETS = "It seems to have a liking for confectionary treats such as cakes.",
 
 		CROW =
 		{
@@ -3507,6 +3535,7 @@ return{
 			CHARGING = "It is storing power.",
 			DESTABILIZING = "We'd best not be around when it goes off.",
 			COOLDOWN = "We must be patient.",
+            RITUAL_SUMMONING = "And there it is. The eye that watches and waits from beyond the realm. Though it seems its long wait has finally come to an end.", -- ritual is actively summoning, shrouden has appeared through the gate in the form of the eye, its looks between players, and charlie.
         },
         ATRIUM_KEY = "The key to that old gateway.",
 		LIFEINJECTOR = "The mold appears to have medicinal properties.",
@@ -4527,6 +4556,8 @@ return{
 			LORE1 = "It appears the ancient king has forfeited his very essence to the darkness.",
 			LORE2 = "A depiction of an extinction-level event.",
 			LORE3 = "These must be the soldier caste of the ancient insect society.",
+            --
+            LORE1_STALKER = "You've no doubt learned a great deal since then.", -- when the stalker/king is with you, different inspect for the king statue!
 		},
 
         ARCHIVE_RESONATOR = {
@@ -4779,6 +4810,7 @@ return{
 		},
 		CARNIVALDECOR_FIGURE_KIT = "How intriguing! I wonder what's inside?",
 		CARNIVALDECOR_FIGURE_KIT_SEASON2 = "How intriguing! I wonder what's inside?",
+		CARNIVALDECOR_FIGURE_KIT_SEASON3 = "How intriguing! I wonder what's inside?",
 
         CARNIVAL_BALL = "I don't want to see anyone playing with this near any breakables.", --unimplemented
 		CARNIVAL_SEEDPACKET = "A bit of extra fiber added to one's diet never hurts.",
@@ -5361,7 +5393,12 @@ return{
 		SHADOWTHRALL_WINGS = "Its wings seem to be utilized for propulsion, not to remain airborne.",
 		SHADOWTHRALL_MOUTH = "A sensible person would avoid the toothy maw.",
 
-        CHARLIE_NPC = "I'd like to give that young lady a stern talking to!",
+        CHARLIE_NPC =
+        {
+            GENERIC = "I'd like to give that young lady a stern talking to!", -- scene 1, first appearance of charlie to repair the gateway
+            SCENE2 = "I'm afraid we've become complicit in that young lady's dark ritual.", -- scene 2, charlie appears again to socket the key and place the ritual down
+            SCENE3 = "I'm afraid we've become complicit in that young lady's dark ritual.", -- scene 3, the gateway has both keys, and the sacrifice pieces are set up in the ritual, she appears to tell you to activate it
+        },
         CHARLIE_HAND = "It requires materials.",
 
         NITRE_FORMATION = "The acidic rain seems to have caused a chemical reaction, producing these formations.",
@@ -6218,11 +6255,11 @@ return{
         VAULT_KEY = "I'm wary of just what it might unlock...",
         VAULT_KEY_PEDESTAL =
         {
-            GENERIC = "The measures employed to contain it suggest the key is of no small importaince.", -- Keystone is on it, ready to take
+            GENERIC = "The measures employed to contain it suggest the key is of no small importance.", -- Keystone is on it, ready to take
             PICKED = "The key has been taken.", -- No more keystone on it, we already took it, or someone else did.
         },
         VAULT_ORB_REFINED = "The ancients tapped the orbs power for teleportation.",
-        VAULT_PILLAR_GUARD_PIECE = "This is obviously the heart of the ancient security tower.",
+        VAULT_PILLAR_GUARD_PIECE = "This is obviously a component of the ancient security tower.",
         VAULT_REFINER_PEDESTAL = "A mill of sorts employed by the ancients.",
 
         VAULT_COMPASS =
@@ -6233,7 +6270,103 @@ return{
         },
 
         CEILING_ROPE = "A tried and true means of escape.",
-        VAULT_KEY_EXIT = "Since there is no place to tie a rope, one may not climb back up.",
+        VAULT_KEY_EXIT = "Since there is no place to tie a rope, one may not climb back up.",--There's no where to tie a rope. Exit, but no re-entry.
+
+        -- Crow Carnival 2026
+
+        CARNIVALGAME_GOLFGAME_KIT_EASY = "An introductory course, no doubt.",
+        CARNIVALGAME_GOLFGAME_KIT_MEDIUM = "A course of middling difficulty.",
+        CARNIVALGAME_GOLFGAME_KIT_HARD = "For those up for a challenge.",
+        CARNIVALGAME_GOLFGAME_KIT_DIY = "One may use this to create a custom, and hopefully delightful, mini-golf course.",
+
+        CARNIVALGAME_GOLF_TEE =
+        {
+            GENERIC = "A token must be deposited before the machine will dispense a ball.",  -- Ready to take a game token, reference other carnival game strings
+            PLAYING = "A token has been inserted. The match is already in play.", -- The game is active and in play
+            INACTIVE = "The mini-golf course requires at least a flaghole to be playable.", -- The game token slot is covered, due to the course not being fully complete (e.g. hole marker isn't placed)
+        },
+        CARNIVALGAME_GOLF_HOLE = "The objective of the game is to deposit the ball into that hole with as few strokes as possible.",
+
+        CARNIVALGAME_GOLF_TEE_KIT = "Where the ball dropper is placed determines where we begin play.",
+        CARNIVALGAME_GOLF_HOLE_KIT = "The flaghole should be positioned sufficiently far from the start to provide an appropriate challenge.",
+
+        CARNIVALGAME_GOLFCLUB = "Essentially an instrument optimized for low-velocity kinetic transfer.",
+        CARNIVALGAME_GOLFBALL = "A near-perfect sphere, optimized for predictable rolling dynamics.",
+
+        CARNIVALGAME_GOLFPROP_FENCE = "It designates the play area.",
+
+        CARNIVALGAME_GOLFPROP_SPINNER = "Its behavior is simple to describe, but intentionally difficult to accommodate.", -- All 4 spin plates(size/rotation) use the same inspect
+        CARNIVALGAME_GOLFPROP_CUTOUT = "It is both aesthetic marker and deliberate impediment to linear play.", -- All 10 prop wood cutouts use the same inspect
+        CARNIVALGAME_GOLFPROP_MOVINGWALL = "A wall that rises and falls at set intervals.", -- All colored moving walls use this space inspect
+
+        CARNIVALGAME_GOLFPROP_WORMHOLE = "It connects to another on the course, enabling instantaneous transfer between them.", -- a fake wormhole, that lets the ball travel to another random wormhole
+
+        CARNIVALGAME_GOLFPROP_SPRING = "A controlled propulsion platform using stored mechanical energy.", -- spring that pops up to launch the ball
+
+        CARNIVALGAME_GOLFPROP_FAN = "The ball path must be adjusted to account for the wind.", -- fan that blows wind and pushes in a direction
+
+        -- Rifts 8
+
+        ROCKY_BOSS =
+        {
+            GENERIC = "Homarus maximus. One would be wise to avoid its major chela.",
+            BOULDER = "That is no ordinary boulder.", -- in boulder form
+            ACID = "Even this species is affected by the acid.",
+        },
+		ROCKY_BOSS_SHADOW = "It seems the shadow has penetrated its protective armor.",
+        BAT_BOSS =
+        {
+            GENERIC = "Canisvolans sanguinarius.",
+            ACID = "It appears to be in a state of frenzy.",
+        },
+		BAT_BOSS_SHADOW = "It is corrupted now.",
+
+        BATBOSSCAVE =
+        {
+            GENERIC = "It's a bat cave, but larger. The implication is obvious.", -- boss bat is inside,
+            VACANT = "It looks vacant.", -- boss bat is not inside anymore
+        },
+
+        WORM_BOSS_SHADOW = "One can safely assume this deadly creature has become far more dangerous once corrupted.",
+
+        ARMOR_ROCKY = "The creature's carapace now affords us similar protection.",
+        BAT_BOSSCORPSEHAT = "I believe it confers upon its wearer some of its vitality-draining ability.",
+
+        ATRIUM_RITUAL_ORGAN_ROCKY =
+        {
+            GENERIC = "The corrupted major chela.",
+            IN_RITUAL = "The offering is in place.", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+        ATRIUM_RITUAL_ORGAN_BAT =
+        {
+            GENERIC = "Even its voice was corrupted.",
+            IN_RITUAL = "The offering is in place.", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+        ATRIUM_RITUAL_ORGAN_WORM =
+        {
+            GENERIC = "There are few darker places than the bowels of a giant corrupted worm.",
+            IN_RITUAL = "The offering is in place.", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+
+		CHARLIE_BOSS = "They have formed an abhorrent triune.",
+		SHROUDEN =
+		{
+			GENERIC = "They are known by many names.",
+			PUDDLE = "The time has come to dispatch this malevolent entity by crushing it underfoot.",
+		},
+
+        CHARLIEARENA_SPIKE = "These formations are rather thorn-like.",
+
+        KING_CANE =
+        {
+            GENERIC = "This staff clearly belonged to an ancient king.", -- has a gem slotted in
+            EMPTY = "It lacks a power source, namely a gem.", -- can socket a gem inside (can be heavy on hint)
+        },
+        QUEEN_TORCH = "This is no ordinary torch.",
+        
+        CHARLIEARENA_TELEPORTER = "It would be prudent to collect everything before entering.",
+
+        MASK_CHARLIE_BOSSHAT = "A cursed relic of the abhorrent triune.",
     },
 
     DESCRIBE_GENERIC = "A rare occurrence. I don't know what that is.",
@@ -6258,6 +6391,4 @@ return{
     },
 
     WENDY_SKILLTREE_EASTEREGG = "only_used_by_wendy",
-
-
 }

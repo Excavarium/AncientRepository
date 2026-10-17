@@ -240,7 +240,9 @@ CONTROL_PRESET_DPAD_RIGHT = 99
 CONTROL_AXISALIGNEDPLACEMENT_TOGGLEMOD = 100
 CONTROL_AXISALIGNEDPLACEMENT_CYCLEGRID = 101
 
-CONTROL_CUSTOM_START = 102 -- NOTES(JBK): This might not be used for anything keep it above our last control in case mods are using it for something.
+CONTROL_SEND_FEEDBACK = 102
+
+CONTROL_CUSTOM_START = 103 -- NOTES(JBK): This might not be used for anything keep it above our last control in case mods are using it for something.
 
 -- virtual controls
 VIRTUAL_CONTROL_START = 10000
@@ -504,6 +506,7 @@ require("clothing")
 require("beefalo_clothing")
 require("misc_items")
 require("emote_items")
+require("idleanimations_items")
 require("item_blacklist")
 require("entitlementlookups")
 
@@ -669,6 +672,8 @@ ITEMTAG =
     FX = "FX",
 }
 
+-- NOTE: These constants aren't used anywhere. Anchor uses TUNING.ANCHOR_DEPTH_TIMES
+-- this also is missing the "BASIC" ocean depth anyways.
 OCEAN_DEPTH =
 {
     SHALLOW = 1,
@@ -973,10 +978,10 @@ SPECIAL_EVENT_MUSIC =
 	-- crow carnival
     [SPECIAL_EVENTS.CARNIVAL] =
     {
-        bank = "music_frontend.fsb",
-        sound = "dontstarve/music/music_FE_summerevent",
+        bank = "music_frontend_cawnival2026.fsb",
+        sound = "dontstarve/music/music_FE_cawnival2026",
     },
-    
+
     --year of the depths worm
     -- THE BETA HAS THIS EVENT TURNED ON, BUT IS USING THE META 5 BANNER AND MUSIC
     --[[
@@ -1012,8 +1017,8 @@ FESTIVAL_EVENT_MUSIC =
 
 DEFAULT_FE_MUSIC =
 {
-	bank = "music_frontend_rifts7.fsb",
-	sound = "dontstarve/music/music_FE_rifts7",
+	bank = "music_frontend_rifts8.fsb",
+	sound = "dontstarve/music/music_FE_rifts8",
 
 	--bank = "music_frontend_WX.fsb",
 	--sound = "dontstarve/music/music_FE_WX",
@@ -1333,6 +1338,8 @@ TECH =
     CARPENTRY_THREE = { CARPENTRY = 3 },
 
     VAULT_REFINE_ONE = { VAULT_REFINE = 1 },
+
+    CARNIVAL_GOLFPROPS_ONE = { CARNIVAL_GOLFPROPS = 1 },
 }
 
 -- See cell_data.h
@@ -2349,6 +2356,7 @@ DST_NPCCHATTERLIST =
 {
     "none", -- Default chatter/image name
 
+    "charlie",
     "daywalker",
     "daywalker_scrap",
     "hermitcrab",
@@ -3036,3 +3044,74 @@ SOCKETQUALITY = { -- NOTES(JBK): Keep this value updated in export_accountitems.
     PERFECT = 4,
 }
 SOCKETQUALITY_MAXVALUE = table.count(SOCKETQUALITY)
+
+MAX_VIRTUALROOMSETS = 32 -- NOTES(JBK): Keep in sync with the engine side implementation. [MVRSNS]
+VIRTUALROOMSETS = {
+    VAULT = "VAULT",
+    LOBBYVAULT = "LOBBYVAULT", -- Intentionally backwards for search string isolation.
+    ATRIUM = "ATRIUM",
+}
+VIRTUALROOMCONTEXT = {
+    NONE = "NONE", -- Default fallback.
+    MARKER = "MARKER",
+    TELEPORTER = "TELEPORTER",
+}
+VIRTUALROOMDIRECTIONS_INDEX = {
+    -- Carindal directions.
+    "N",
+    "E",
+    "S",
+    "W",
+    -- Extra dimensions.
+    "IN",
+    "OUT",
+}
+VIRTUALROOMDIRECTIONS = table.invert(VIRTUALROOMDIRECTIONS_INDEX)
+VIRTUALROOMDIRECTIONS_MAX_SHUFFLE_INDEX = VIRTUALROOMDIRECTIONS.W -- Only shuffle the cardinals.
+VIRTUALROOMLOBBY = "virtualroomlobby" -- Special name for where a part of the map is used for virtual rooms to exist at before changing rooms.
+
+VIRTUALROOM_DONOTCARE_TILE = "x"
+VIRTUALROOM_BOUNDINGBOXES = {
+    [VIRTUALROOMSETS.VAULT] = {
+        minx = -5, miny = -5,
+        maxx = 5, maxy = 5,
+        mask = { -- Can be nil for a solid box. Index 1 is at minx, miny so this is visually flipped vertically.
+            0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+            0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0,
+        },
+    },
+    [VIRTUALROOMSETS.LOBBYVAULT] = {
+        minx = -3, miny = -3,
+        maxx = 4, maxy = 4,
+        mask = { -- Can be nil for a solid box. Index 1 is at minx, miny so this is visually flipped vertically.
+            0, 0, 1, 1, 1, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 0, 0,
+            1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1,
+            0, 1, 1, 1, 1, 1, 0, 0,
+            0, 0, 1, 1, 1, 0, 0, 0,
+            0, 0, 1, 1, 1, 0, 0, 0,
+        },
+    },
+    [VIRTUALROOMSETS.ATRIUM] = {
+        minx = -10, miny = -10,
+        maxx = 10, maxy = 10,
+        mask = nil, -- Can be nil for a solid box. Index 1 is at minx, miny so this is visually flipped vertically.
+    },
+}
+
+CHARACTER_KNOWS_CHARLIE =
+{
+    winona = true,
+    waxwell = true,
+}

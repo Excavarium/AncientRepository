@@ -595,7 +595,9 @@ CRAFTING_FILTERS.CRAFTING_STATION.recipes =
 	"critter_glomling_builder",
 	"critter_lunarmothling_builder",
 	"critter_eyeofterror_builder",
+	-- skins for critterlab
     "critter_bulbin_builder",
+    "critter_eets_builder",
 
 	-- Sculpting
 	"chesspiece_hornucopia_builder",
@@ -644,6 +646,11 @@ CRAFTING_FILTERS.CRAFTING_STATION.recipes =
 	"chesspiece_wagboss_lunar_builder",
 	"chesspiece_yoth_builder",
 	"chesspiece_vault_pillar_guard_builder",
+	"chesspiece_batboss_shadow_builder",
+	"chesspiece_rockyboss_shadow_builder",
+	"chesspiece_wormboss_shadow_builder",
+	"chesspiece_charlie_boss_builder",
+	"chesspiece_shrouden_builder",
 
 	-- wintersfeastoven
 	"wintercooking_berrysauce",
@@ -787,6 +794,7 @@ CRAFTING_FILTERS.CRAFTING_STATION.recipes =
 	"carnival_vest_c",
 	"carnivaldecor_figure_kit",
 	"carnivaldecor_figure_kit_season2",
+	"carnivaldecor_figure_kit_season3",
 	"carnivalcannon_confetti_kit",
 	"carnivalcannon_sparkle_kit",
 	"carnivalcannon_streamer_kit",
@@ -796,6 +804,8 @@ CRAFTING_FILTERS.CRAFTING_STATION.recipes =
 	"carnivaldecor_eggride2_kit",
 	"carnivaldecor_eggride3_kit",
 	"carnivaldecor_eggride4_kit",
+	"carnivaldecor_eggride5_kit",
+	"carnivaldecor_eggride6_kit",
 	"carnivaldecor_lamp_kit",
 
 	--- summer carnival host
@@ -809,6 +819,40 @@ CRAFTING_FILTERS.CRAFTING_STATION.recipes =
 	"carnivalgame_shooting_kit",
 	"carnivalgame_wheelspin_kit",
 	"carnivalgame_puckdrop_kit",
+	"carnivalgame_golfgame_kit_easy",
+	"carnivalgame_golfgame_kit_medium",
+	"carnivalgame_golfgame_kit_hard",
+	"carnivalgame_golfgame_kit_diy",
+
+	--- summer carnival golf props dispenser
+    "carnivalgame_golf_shape_curve1x1",
+    "carnivalgame_golf_shape_curve1x2",
+    "carnivalgame_golf_shape_curve2x1",
+    "carnivalgame_golf_shape_curve2x2",
+    "carnivalgame_golf_shape_line1x1",
+    "carnivalgame_golf_shape_diagonal1x1",
+    "carnivalgame_golfprop_movingwall_red",
+    "carnivalgame_golfprop_movingwall_blue",
+	"carnivalgame_golfprop_smallspinner_cw",
+	"carnivalgame_golfprop_smallspinner_ccw",
+	"carnivalgame_golfprop_mediumspinner_cw",
+	"carnivalgame_golfprop_mediumspinner_ccw",
+	"carnivalgame_golfprop_wormhole",
+	"carnivalgame_golfprop_wormhole_limited",
+	"carnivalgame_golfprop_spring_nofaced",
+	"carnivalgame_golfprop_spring_nofaced_onetime",
+	"carnivalgame_golfprop_spring",
+	"carnivalgame_golfprop_spring_onetime",
+ 	"carnivalgame_golfprop_cutout1",
+ 	"carnivalgame_golfprop_cutout2",
+ 	"carnivalgame_golfprop_cutout3",
+ 	"carnivalgame_golfprop_cutout4",
+ 	"carnivalgame_golfprop_cutout5",
+ 	"carnivalgame_golfprop_cutout6",
+ 	"carnivalgame_golfprop_cutout7",
+ 	"carnivalgame_golfprop_cutout8",
+ 	"carnivalgame_golfprop_cutout9",
+ 	"carnivalgame_golfprop_cutout10",
 
 	---- CARPENTRY ----
 

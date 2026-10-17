@@ -148,13 +148,17 @@ function InventoryItem:InheritMoisture(moisture, iswet)
 end
 
 function InventoryItem:InheritWorldWetnessAtXZ(x, z)
-	if self.inst.components.inventoryitemmoisture ~= nil and not IsUnderRainDomeAtXZ(x, z) then
+	if self.inst.components.inventoryitemmoisture ~= nil
+        and not IsUnderRainDomeAtXZ(x, z)
+        and TheWorld.Map:CanPointHaveRain(x, 0, z) then
 		self.inst.components.inventoryitemmoisture:InheritMoisture(TheWorld.state.wetness, TheWorld.state.iswet)
 	end
 end
 
 function InventoryItem:InheritWorldWetnessAtTarget(target)
-	if self.inst.components.inventoryitemmoisture ~= nil and target.components.rainimmunity == nil then
+	if self.inst.components.inventoryitemmoisture ~= nil
+        and target.components.rainimmunity == nil
+        and TheWorld.Map:CanPointHaveRain(target.Transform:GetWorldPosition()) then
 		self.inst.components.inventoryitemmoisture:InheritMoisture(TheWorld.state.wetness, TheWorld.state.iswet)
 	end
 end
@@ -265,11 +269,18 @@ function InventoryItem:SetTemperatureMaxMoisturePenalty(moisturepenalty)
     end
 end
 
+function InventoryItem:SetNoWetTemperaturePenalty(nopenalty)
+    if self.inst.components.inventoryitemtemperature ~= nil then
+        self.inst.components.inventoryitemtemperature:SetNoWetPenalty(nopenalty)
+    end
+end
+
 function InventoryItem:SetTemperaturePercentAtMost(percent) -- percent is between min and max temperatures
 	if self.inst.components.inventoryitemtemperature ~= nil then
 		self.inst.components.inventoryitemtemperature:SetPercentAtMost(percent)
 	end
 end
+--
 
 function InventoryItem:SetOwner(owner)
     self.owner = owner
@@ -422,6 +433,16 @@ function InventoryItem:DoDropPhysics(x, y, z, randomdir, speedmult)
     end
 end
 
+function InventoryItem:OnPickupStopSmoldering(pickupguy) -- also called in ACTIONS.WOBY_PICKUP.fn
+    if self.inst.components.burnable and self.inst.components.burnable:IsSmoldering() then
+        self.inst.components.burnable:StopSmoldering()
+        if pickupguy.components.health ~= nil then
+            pickupguy.components.health:DoFireDamage(TUNING.SMOTHER_DAMAGE, nil, true)
+            pickupguy:PushEvent("burnt")
+        end
+    end
+end
+
 -- If this function retrns true then it has destroyed itself and you shouldnt give it to the player
 function InventoryItem:OnPickup(pickupguy, src_pos)
 -- not only the player can have inventory!
@@ -433,14 +454,7 @@ function InventoryItem:OnPickup(pickupguy, src_pos)
         self.isnew = false
     end
 
-    if self.inst.components.burnable and self.inst.components.burnable:IsSmoldering() then
-        self.inst.components.burnable:StopSmoldering()
-        if pickupguy.components.health ~= nil then
-            pickupguy.components.health:DoFireDamage(TUNING.SMOTHER_DAMAGE, nil, true)
-            pickupguy:PushEvent("burnt")
-        end
-    end
-
+    self:OnPickupStopSmoldering(pickupguy)
     self.inst:PushEvent("onpickup", { owner = pickupguy })
     return self.onpickupfn and self.onpickupfn(self.inst, pickupguy, src_pos)
 end
@@ -485,13 +499,10 @@ function InventoryItem:OnRemoveEntity()
 end
 
 function InventoryItem:GetGrandOwner()
-    if self.owner then
-        if self.owner.components.inventoryitem then
-            return self.owner.components.inventoryitem:GetGrandOwner()
-        else
-            return self.owner
-        end
-    end
+	return self.owner
+		and self.owner.components.inventoryitem
+		and self.owner.components.inventoryitem:GetGrandOwner()
+		or self.owner
 end
 
 function InventoryItem:IsSheltered()
