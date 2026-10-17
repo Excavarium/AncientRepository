@@ -17,6 +17,18 @@ local function GetIceStaffProjectileSound(inst, equip)
     return "dontstarve/wilson/attack_icestaff"
 end
 
+local function GetKingStaffProjectileSound(inst, equip) -- shadowdominance tag means the staff is corrupted
+    if equip:HasTag("icestaff") then
+        return equip:HasTag("shadowdominance") and "dontstarve/wilson/attack_icestaff_corrupted"
+            or "dontstarve/wilson/attack_icestaff_kingcane"
+    elseif equip:HasTag("firestaff") then
+        return equip:HasTag("shadowdominance") and "dontstarve/wilson/attack_firestaff_corrupted"
+            or "dontstarve/wilson/attack_firestaff_kingcane"
+    end
+
+    return "dontstarve/wilson/attack_weapon"
+end
+
 local function DoEquipmentFoleySounds(inst)
     local inventory = inst.replica.inventory
     if inventory ~= nil then
@@ -281,6 +293,7 @@ local actionhandlers =
 			return not (inst.sg:HasStateTag("prehammer") or inst:HasTag("prehammer")) and "hammer_start" or nil
         end),
     ActionHandler(ACTIONS.TERRAFORM, "terraform"),
+    ActionHandler(ACTIONS.TERRAFORM_REMOVE, "terraform"),
     ActionHandler(ACTIONS.DIG,
         function(inst)
             if inst:HasTag("beaver") then
@@ -996,6 +1009,16 @@ local actionhandlers =
     ActionHandler(ACTIONS.CLIMB, "climb_pre"),
     ActionHandler(ACTIONS.STARTVAULTORBTELEPORT, "crushitemcast_holding"),
     ActionHandler(ACTIONS.VAULTORBTELEPORT_MAP, "crushitemcast_trigger"),
+
+	-- Crow Carnival 2026
+	ActionHandler(ACTIONS.GOLF_START_AIMING, "club_set"),
+	ActionHandler(ACTIONS.GOLF_START_CHARGING, function(inst)
+		inst.sg.statemem.charging = true
+		return "club_putt_pre"
+	end),
+
+    -- Rifts 8
+    ActionHandler(ACTIONS.CORRUPTNIGHTMARE, "castspell"),
 }
 
 local events =
@@ -5001,6 +5024,7 @@ local states =
                         inst.sg.statemem.projectiledelay = 8 * FRAMES - equip.projectiledelay
                         if inst.sg.statemem.projectiledelay > FRAMES then
                             inst.sg.statemem.projectilesound =
+                                (equip.prefab == "king_cane" and GetKingStaffProjectileSound(inst, equip)) or
                                 (equip:HasTag("icestaff") and GetIceStaffProjectileSound(inst, equip)) or
                                 (equip:HasTag("firestaff") and "dontstarve/wilson/attack_firestaff") or
                                 (equip:HasTag("firepen") and "wickerbottom_rework/firepen/launch") or
@@ -5011,6 +5035,7 @@ local states =
                     end
                     if inst.sg.statemem.projectilesound == nil then
                         inst.SoundEmitter:PlaySound(
+                            (equip.prefab == "king_cane" and GetKingStaffProjectileSound(inst, equip)) or
                             (equip:HasTag("icestaff") and GetIceStaffProjectileSound(inst, equip)) or
                             (equip:HasTag("firestaff") and "dontstarve/wilson/attack_firestaff") or
                             (equip:HasTag("firepen") and "wickerbottom_rework/firepen/launch") or
@@ -5098,6 +5123,7 @@ local states =
                     inst.sg.statemem.projectiledelay = 8 * FRAMES - equip.projectiledelay
                     if inst.sg.statemem.projectiledelay > FRAMES then
                         inst.sg.statemem.projectilesound =
+                            (equip.prefab == "king_cane" and GetKingStaffProjectileSound(inst, equip)) or
                             (equip:HasTag("icestaff") and GetIceStaffProjectileSound(inst, equip)) or
                             (equip:HasTag("firestaff") and "dontstarve/wilson/attack_firestaff") or
                             (equip:HasTag("firepen") and "wickerbottom_rework/firepen/launch") or
@@ -5108,6 +5134,7 @@ local states =
                 end
                 if inst.sg.statemem.projectilesound == nil then
                     inst.SoundEmitter:PlaySound(
+                        (equip.prefab == "king_cane" and GetKingStaffProjectileSound(inst, equip)) or
                         (equip:HasTag("icestaff") and GetIceStaffProjectileSound(inst, equip)) or
                         (equip:HasTag("shadow") and "dontstarve/wilson/attack_nightsword") or
                         (equip:HasTag("firestaff") and "dontstarve/wilson/attack_firestaff") or
@@ -8542,6 +8569,123 @@ local states =
 				inst.entity:SetIsPredictingMovement(true)
 				inst:RemoveTag("nopredict_client")
 			end
+		end,
+	},
+
+	State{
+		name = "club_set",
+		tags = { "doing", "busy", "nodragwalk" },
+		server_states = { "club_set" },
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+			inst.AnimState:PlayAnimation("club_set_pre")
+			inst.AnimState:PushAnimation("club_set_loop")
+
+			if TheInput:ControllerAttached() then
+				inst.sg:AddStateTag("overridelocomote")
+			end
+
+			inst:PerformPreviewBufferedAction()
+			inst.sg:SetTimeout(TIMEOUT)
+		end,
+
+		onupdate = function(inst)
+			if inst.sg.statemem.aiming then
+				if not inst:HasTag("golf_aiming") then
+					inst.sg.statemem.synced = false
+					inst.sg:GoToState("idle", "noanim")
+					return
+				end
+			elseif inst.sg.statemem.synced then
+				if not inst.sg:ServerStateMatches() then
+					inst.sg.statemem.synced = false
+					inst.sg:GoToState("idle", "noanim")
+					return
+				elseif inst:HasTag("golf_aiming") then
+					inst.sg.statemem.aiming = true
+					ClearCachedServerState(inst)
+				end
+			elseif inst.sg:ServerStateMatches() then
+				if inst.entity:FlattenMovementPrediction() then
+					inst.sg.statemem.synced = true
+					inst.entity:SetIsPredictingMovement(false)
+					inst.sg:RemoveStateTag("busy")
+					if inst:HasTag("golf_aiming") then
+						inst.sg.statemem.aiming = true
+						ClearCachedServerState(inst)
+					end
+				end
+			elseif inst.bufferedaction == nil then
+				inst.AnimState:PlayAnimation("club_set_pst")
+				inst.sg:GoToState("idle", true)
+			end
+
+			if TheInput:ControllerAttached() then
+				inst.sg:AddStateTag("overridelocomote")
+			else
+				inst.sg:RemoveStateTag("overridelocomote")
+			end
+		end,
+
+		ontimeout = function(inst)
+			if not inst.sg.statemem.synced then
+				inst:ClearBufferedAction()
+				inst.AnimState:PlayAnimation("club_set_pst")
+				inst.sg:GoToState("idle", true)
+			end
+		end,
+
+		events =
+		{
+			EventHandler("locomote", function(inst)
+				return inst.sg:HasStateTag("overridelocomote")
+			end),
+		},
+
+		onexit = function(inst)
+			if inst.sg.statemem.synced then
+				inst.entity:SetIsPredictingMovement(true)
+
+				if not inst.sg.statemem.charging then
+					local inventory = inst.replica.inventory
+					local club = inventory and inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+					if club and club.components.golfclub_reticule then
+						club.components.golfclub_reticule:CancelTarget_Client()
+					end
+				end
+			end
+		end,
+	},
+
+	State{
+		name = "club_putt_pre",
+		tags = { "busy" },
+		server_states = { "club_putt_pre", "club_putt", "club_swing" },
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+			inst.AnimState:PlayAnimation("club_putt_pre")
+			inst.AnimState:PushAnimation("club_putt_lag", false)
+			inst:PerformPreviewBufferedAction()
+			inst.sg:SetTimeout(TIMEOUT)
+		end,
+
+		onupdate = function(inst)
+			if inst.sg:ServerStateMatches() then
+				if inst.entity:FlattenMovementPrediction() then
+					inst.sg:GoToState("idle", "noanim")
+				end
+			elseif inst.bufferedaction == nil then
+				inst.AnimState:PlayAnimation("club_set_pst")
+				inst.sg:GoToState("idle", true)
+			end
+		end,
+
+		ontimeout = function(inst)
+			inst:ClearBufferedAction()
+			inst.AnimState:PlayAnimation("club_set_pst")
+			inst.sg:GoToState("idle", true)
 		end,
 	},
 }

@@ -444,7 +444,7 @@ end
 function PlayerController:PullUpMap(maptarget, forced_actiondef)
     if self.inst.replica.inventory then
         local activeitem = self.inst.replica.inventory:GetActiveItem()
-        if activeitem then
+        if activeitem and maptarget ~= activeitem then -- don't return the active item if it is the map target
             self.inst.replica.inventory:ReturnActiveItem()
             if not self.inst.replica.inventory:IsHolding(activeitem) then
                 return
@@ -845,13 +845,18 @@ function PlayerController:DoControllerActionButton()
         obj = self:GetControllerTarget()
         if obj ~= nil then
             act = self:GetSceneItemControllerAction(obj)
-            if act ~= nil and act.action == ACTIONS.BOAT_CANNON_SHOOT then
-                obj = nil --meh.. reusing obj =P
-                local boatcannonuser = self.inst.components.boatcannonuser
-                local reticule = boatcannonuser ~= nil and boatcannonuser:GetReticule() or nil
-                if reticule ~= nil then
-					reticule:PingReticuleAt(act:GetDynamicActionPoint())
-                end
+			if act then
+				if act.action == ACTIONS.BOAT_CANNON_SHOOT then
+					obj = nil --meh.. reusing obj =P
+					local boatcannonuser = self.inst.components.boatcannonuser
+					local reticule = boatcannonuser and boatcannonuser:GetReticule()
+					if reticule then
+						reticule:PingReticuleAt(act:GetDynamicActionPoint())
+					end
+				elseif act.action == ACTIONS.GOLF_START_CHARGING then
+					obj = nil --meh.. reusing obj =P
+					--@V2C #TODO
+				end
             end
         end
         if act == nil then
@@ -999,9 +1004,10 @@ function PlayerController:OnRemoteControllerActionButtonPoint(actioncode, positi
 				lmb, rmb = self:GetGroundUseAction(position, spellbook)
 			end
 		elseif spell_id == nil then
-            local cannon = self.inst.components.boatcannonuser ~= nil and self.inst.components.boatcannonuser:GetCannon() or nil
-            if cannon ~= nil then
-                lmb = self.inst.components.playeractionpicker:GetLeftClickActions(position, cannon)[1]
+			if actioncode == ACTIONS.BOAT_CANNON_SHOOT.code then
+				lmb = self.inst.components.playeractionpicker:GetCannonAimActions(self.inst, position, false)[1]
+			elseif actioncode == ACTIONS.GOLF_START_CHARGING.code then
+				lmb = self.inst.components.playeractionpicker:GetGolfAimActions(position, false)[1]
             else
                 lmb, rmb = self:GetGroundUseAction(position)
             end
@@ -2025,7 +2031,7 @@ local function GetPickupAction(self, target, tool)
 			or nil
     elseif target.replica.inventoryitem ~= nil and
         target.replica.inventoryitem:CanBePickedUp(self.inst) and
-		not (target:HasTag("heavy") or (target:HasTag("fire") and not target:HasTag("lighter")) or target:HasTag("catchable")) and
+		not (target:HasTag("heavy") or (target:HasTag("fire") and not target:HasAnyTag("lighter", "torch")) or target:HasTag("catchable")) and
         not target:HasTag("spider") then
         if self:HasItemSlots() or target.replica.equippable ~= nil then
             return ACTIONS.PICKUP
@@ -3397,6 +3403,28 @@ local function UpdateControllerInteractionTarget(self, dt, x, y, z, dirx, dirz, 
             self.controller_target_age = 0
         end
         return
+    end
+
+    -- Turf entity removal always highest priority.
+    if equiped_item and equiped_item:HasActionComponent("terraformer") then
+        -- Special case for ACTIONS.TERRAFORM_REMOVE via placed turf visuals needing to take highest priority over all other checks due to increased range from entity origin.
+        -- We will use the player's origin to find things with the tag to use the action.
+        local x, y, z = self.inst.Transform:GetWorldPosition()
+        local terraform_remove_target = nil
+        local ents = TheSim:GetEntitiesAtScreenPoint(TheSim:GetScreenPos(x, y, z))
+        for _, ent in ipairs(ents) do
+            if ent:HasTag("terraformerremoveable") then
+                terraform_remove_target = ent
+                break
+            end
+        end
+        if terraform_remove_target then
+            if terraform_remove_target ~= self.controller_target then
+                self.controller_target = terraform_remove_target
+                self.controller_target_age = 0
+            end
+            return
+        end
     end
 
     --Fishing targets may have large radius, making it hard to target with normal priority
@@ -4798,6 +4826,8 @@ function PlayerController:OnLeftClick(down)
         if reticule ~= nil then
 			reticule:PingReticuleAt(act:GetDynamicActionPoint())
         end
+	elseif act.action == ACTIONS.GOLF_START_CHARGING then
+		--@V2C #TODO
     end
 
     if self.ismastersim then
@@ -4806,6 +4836,7 @@ function PlayerController:OnLeftClick(down)
         local mouseover, platform, pos_x, pos_z
         if act.action == ACTIONS.CASTAOE or
 			act.action == ACTIONS.BOAT_CANNON_SHOOT or
+			act.action == ACTIONS.GOLF_START_CHARGING or
 			act == dblclickact
 		then
             --These actions use reticule position
@@ -5382,6 +5413,34 @@ function PlayerController:GetGroundUseAction(position, spellbook)
 				if rmb ~= nil and rmb.action == ACTIONS.TERRAFORM then
 					rmb.distance = 2
 				end
+                local lmb_terraforming = lmb and lmb.action == ACTIONS.TERRAFORM
+                local rmb_terraforming = rmb and rmb.action == ACTIONS.TERRAFORM
+                if lmb_terraforming or rmb_terraforming then
+                    local tool = self.inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+                    -- Special case for ACTIONS.TERRAFORM_REMOVE via placed turf visuals needing to take highest priority over all other checks due to increased range from entity origin.
+                    -- We will use the player's origin to find things with the tag to use the action.
+                    local x, y, z = self.inst.Transform:GetWorldPosition()
+                    local terraform_remove_target = nil
+                    local ents = TheSim:GetEntitiesAtScreenPoint(TheSim:GetScreenPos(x, y, z))
+                    for _, ent in ipairs(ents) do
+                        if ent:HasTag("terraformerremoveable") then
+                            terraform_remove_target = ent
+                            break
+                        end
+                    end
+                    if terraform_remove_target then
+                        if lmb_terraforming then
+                            lmb.action = ACTIONS.TERRAFORM_REMOVE
+                            lmb.target = terraform_remove_target
+                            lmb.distance = 0
+                        end
+                        if rmb_terraforming then
+                            rmb.action = ACTIONS.TERRAFORM_REMOVE
+                            rmb.target = terraform_remove_target
+                            rmb.distance = 0
+                        end
+                    end
+                end
 				return lmb, rmb ~= nil and (lmb == nil or lmb.action ~= rmb.action) and rmb or nil
 			end
         end

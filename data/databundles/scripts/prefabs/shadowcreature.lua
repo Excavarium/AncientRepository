@@ -16,10 +16,15 @@ end
 local TARGET_DIST = TUNING.SHADOWCREATURE_TARGET_DIST
 local TARGET_DIST_SQ = TARGET_DIST * TARGET_DIST
 
-local VAULT_TARGET_MUST_TAGS = { "epic" }
-local VAULT_TARGET_CANT_TAGS = { "INLIMBO" }
-local function IsVaultTargetValid(guy, inst)
-	return guy:HasAllTags("vault_pillar_guard", "vault_key_trial_guardian") and inst.components.combat:CanTarget(guy)
+local VAULT_TARGET_MUST_TAGS, VAULT_SHADOWCREATURE_TAGS
+
+local function IsPriorityVaultTargetAtXZ(inst, target, x, z)
+	for _, v in ipairs(TheSim:FindEntities(x, 0, z, TARGET_DIST, VAULT_SHADOWCREATURE_TAGS)) do
+		if v ~= inst and v.components.combat:TargetIs(target) then
+			return false
+		end
+	end
+	return true
 end
 
 local function retargetfn(inst)
@@ -50,11 +55,32 @@ local function retargetfn(inst)
     end
 
     if invault then -- Vault targetting. Get the guard towers!
-        local vaulttarget = FindEntity(inst, TARGET_DIST, IsVaultTargetValid, VAULT_TARGET_MUST_TAGS, VAULT_TARGET_CANT_TAGS)
-        if vaulttarget ~= nil then
-            inst.ignorecombatonkeeptarget = true
-            return vaulttarget, inst.components.combat.target ~= nil and not IsVaultTargetValid(inst.components.combat.target, inst)
-        end
+		if VAULT_TARGET_MUST_TAGS == nil then
+			VAULT_TARGET_MUST_TAGS = { "vault_pillar_guard", "vault_key_trial_guardian" }
+			VAULT_SHADOWCREATURE_TAGS = { "shadowcreature", "_combat" }
+		end
+
+		local x, y, z = inst.Transform:GetWorldPosition()
+		local vaulttarget = inst.components.combat.target
+		if vaulttarget and vaulttarget:HasAllTags(VAULT_TARGET_MUST_TAGS) and IsPriorityVaultTargetAtXZ(inst, vaulttarget, x, z) then
+			inst.keeptargetignoresattackedtime = true
+			return
+		end
+
+		local ents = TheSim:FindEntities(x, y, z, TARGET_DIST, VAULT_TARGET_MUST_TAGS)
+		if #ents > 0 then
+			vaulttarget = ents[1]
+			for _, v in ipairs(ents) do
+				if v.entity:IsVisible() and inst.components.combat:CanTarget(v) and IsPriorityVaultTargetAtXZ(inst, v, x, z) then
+					vaulttarget = v
+					break
+				end
+			end
+			inst.keeptargetignoresattackedtime = true
+			return vaulttarget, true
+		end
+
+		inst.keeptargetignoresattackedtime = nil
     end
 
 	local forcechange = inst.forceretarget
@@ -96,7 +122,7 @@ local function keeptargetfn(inst, target)
 	--           -this is fine XD
 	--
 	--Deaggro if target has been sane for 2.5s, hasn't hit us in 6s, and hasn't tried to attack us for 5s
-	if not inst.ignorecombatonkeeptarget and (inst._deaggrotime + 2.5 >= t or
+	if not inst.keeptargetignoresattackedtime and (inst._deaggrotime + 2.5 >= t or
 		inst.components.combat.lastwasattackedbytargettime + 6 >= t or
 		(	target.components.combat and
 			target.components.combat:IsRecentTarget(inst) and
@@ -154,14 +180,12 @@ local function OnDeath(inst, data)
         inst.components.lootdropper:SetChanceLootTable(nil)
     end
 
-    -- no loot in key room
-    local vaultroommanager = TheWorld.components.vaultroommanager
-    if vaultroommanager ~= nil
-        and vaultroommanager:GetVaultRoomId() == "key1"
-        and TheWorld.Map:IsPointInVaultRoom(inst.Transform:GetWorldPosition())
+    if TheWorld.Map:IsPointInVirtualRoomSet(VIRTUALROOMSETS.VAULT, inst.Transform:GetWorldPosition())
+        and TheWorld.components.virtualroommanager:GetVirtualRoomSet(VIRTUALROOMSETS.VAULT):GetCurrentRoomName() == "key1"
         and (data.afflicter == nil or not data.afflicter.isplayer) then
-		inst.components.lootdropper:SetLoot({})
-		inst.components.lootdropper:SetChanceLootTable(nil)
+        -- no loot in key room
+        inst.components.lootdropper:SetLoot({})
+        inst.components.lootdropper:SetChanceLootTable(nil)
     end
 end
 

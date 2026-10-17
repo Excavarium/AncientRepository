@@ -112,8 +112,8 @@ local function MakeCritter(name, animname, face, diet, flying, data, prefabs)
     local assets =
     {
 	    Asset("ANIM", "anim/"..animname.."_basic.zip"),
-	    Asset("ANIM", "anim/"..animname.."_emotes.zip"),
-	    Asset("ANIM", "anim/"..animname.."_traits.zip"),
+        Asset("ANIM", "anim/"..animname.."_emotes.zip"),
+        Asset("ANIM", "anim/"..animname.."_traits.zip"),
     }
     if buildname then
         table.insert(assets, Asset("ANIM", "anim/"..buildname..".zip"))
@@ -384,4 +384,6 @@ return MakeCritter("critter_lamb", "sheepington", 6, standard_diet, false, {favo
        MakeCritter("critter_eyeofterror", "eyeofterror_mini", 6, standard_diet, true, {buildname = "eyeofterror_mini_basic", favoritefood="baconeggs"--[[, flyingsoundloop = "a hover loop here, IF we want it"]] }),
        MakeBuilder("critter_eyeofterror"),
        MakeCritter("critter_bulbin", "bulbin", 6, standard_diet, false, {skin_only=true, favoritefood="stuffedeggplant", allow_platform_hopping=true, assets=bulbin_assets}),
-       MakeBuilder("critter_bulbin")
+       MakeBuilder("critter_bulbin"),
+       MakeCritter("critter_eets", "eets", 4, standard_diet, false, {skin_only=true, favoritefood="butterflymuffin", allow_platform_hopping=true}),
+       MakeBuilder("critter_eets")

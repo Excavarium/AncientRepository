@@ -1,4 +1,5 @@
 local WAXED_PLANTS = require "prefabs/waxed_plant_common"
+local easing = require "easing"
 
 local DEBUG_MODE = BRANCH == "dev"
 
@@ -744,6 +745,65 @@ function MakePondPhysics(inst, rad, height)
 		COLLISION.GIANTS
 	)
 	phys:SetCapsule(rad, height or 2)
+	return phys
+end
+
+function MakeGolfBallPhysics(inst, rad)
+	local phys = inst.entity:AddPhysics()
+	phys:SetMass(1)
+	phys:SetFriction(0.06)
+	phys:SetDamping(0)
+	phys:SetRestitution(0.9)
+	phys:SetCollisionGroup(COLLISION.ITEMS)
+	phys:SetCollisionMask(COLLISION.WORLD)
+	phys:SetSphere(rad or 0.2)
+	return phys
+end
+
+local function GolfObstacle_OnEntityWake(inst)
+	inst:RemoveEventCallback("entitywake", GolfObstacle_OnEntityWake)
+
+	local fx = CreateEntity()
+
+	fx:AddTag("CLASSIFIED")
+	--[[Non-networked entity]]
+	fx.entity:SetCanSleep(TheWorld.ismastersim)
+	fx.persists = false
+
+	fx.entity:AddTransform()
+	fx.entity:AddPhysics()
+	fx.Physics:SetMass(0)
+	fx.Physics:SetFriction(0.1)
+	fx.Physics:SetDamping(0)
+	fx.Physics:SetRestitution(0.85)
+	fx.Physics:SetCollisionGroup(COLLISION.BOAT_LIMITS)
+	fx.Physics:SetCollisionMask(COLLISION.ITEMS)
+
+	local r = inst.Physics:GetRadius()
+	local r1 = inst._golfradoverride or r
+	local ht
+	if r1 < r then
+		ht = r + math.sqrt(r * r - r1 * r1)
+	else
+		ht = r
+	end
+	fx.Physics:SetCylinder(r1, ht)
+	inst._golfradoverride = nil
+
+	fx.Transform:SetPosition(inst.Transform:GetWorldPosition())
+	fx:ListenForEvent("onremove", function() fx:Remove() end, inst)
+end
+
+function MakeGolfObstaclePhysics(inst, rad, golfradoverride)
+	local phys = inst.entity:AddPhysics()
+	phys:SetMass(0)
+	phys:SetCollisionGroup(COLLISION.SMALLOBSTACLES)
+	phys:SetCollisionMask(COLLISION.ITEMS)
+	phys:SetSphere(rad or 0.2)
+
+	inst._golfradoverride = golfradoverride
+	inst:ListenForEvent("entitywake", GolfObstacle_OnEntityWake)
+
 	return phys
 end
 
@@ -1592,11 +1652,11 @@ function ToggleOffAllObjectCollisions(inst)
 		newmask = bit.bxor(newmask, COLLISION.CHARACTERS)
 	end
 	if not inst.sg.mem.isobstaclepassthrough then
-		local obstaclepassthroughmask = bit.band(newmask, bit.bor(
-			COLLISION.OBSTACLES,
-			COLLISION.SMALLOBSTACLES,
-			COLLISION.GIANTS
-		))
+		local obstaclepassthroughmask = bit.band(newmask,
+			bit.bor(COLLISION.OBSTACLES,
+			bit.bor(COLLISION.SMALLOBSTACLES,
+					COLLISION.GIANTS))
+		)
 		if obstaclepassthroughmask ~= 0 then
 			newmask = bit.bxor(newmask, obstaclepassthroughmask)
 			inst.sg.mem.isobstaclepassthrough = true
@@ -1618,11 +1678,11 @@ end
 function ToggleOnAllObjectCollisionsAt(inst, x, z)
     if inst.sg.mem.isobstaclepassthrough then
         inst.sg.mem.isobstaclepassthrough = nil
-		inst.Physics:CollidesWith(inst.sg.mem.obstaclepassthroughmask or bit.bor(
-        	COLLISION.OBSTACLES,
-			COLLISION.SMALLOBSTACLES,
-			COLLISION.GIANTS
-        ))
+		inst.Physics:CollidesWith(inst.sg.mem.obstaclepassthroughmask or
+			bit.bor(COLLISION.OBSTACLES,
+			bit.bor(COLLISION.SMALLOBSTACLES,
+					COLLISION.GIANTS))
+		)
 		inst.sg.mem.obstaclepassthroughmask = nil
     end
     inst.Physics:Teleport(x, 0, z)
@@ -1989,6 +2049,11 @@ local function GetFumaroleDamageMultFn(inst, target)
     end
 end
 
+local function fumarole_UpdateTemperatureModifier(inst)
+    local heaterpower = math.clamp(inst.components.inventoryitemtemperature and inst.components.inventoryitemtemperature.externalheaterpower or 0, 0, 1)
+    inst.components.inventoryitem:SetTemperatureModifier("fumaroletool_mod", easing.linear(heaterpower, TUNING.FUMAROLETOOL_TEMP_MODIFIER, math.abs(TUNING.FUMAROLETOOL_TEMP_MODIFIER), 1))
+end
+
 function MakeFumaroleToolPristine(inst)
     inst:AddTag("heatrock")
     --HASHEATER (from heater component) added to pristine state for optimization
@@ -2004,6 +2069,8 @@ function MakeFumaroleTool(inst, heatonuse, onbroken, onrepaired, onupdatetempera
     inst.components.inventoryitem:SetTemperatureModifier("fumaroletool_mod", TUNING.FUMAROLETOOL_TEMP_MODIFIER)
     inst.components.inventoryitem:SetMinTemperature(TUNING.FUMAROLETOOL_MINTEMP)
     inst.components.inventoryitem:SetMaxTemperature(TUNING.FUMAROLETOOL_MAXTEMP)
+    inst.components.inventoryitemtemperature.inherentinsulation = TUNING.INSULATION_MED_LARGE
+    inst:ListenForEvent("temperaturedelta", fumarole_UpdateTemperatureModifier)
     if inst.components.finiteuses ~= nil then
         inst.components.finiteuses:ClearAllConsumptions()
         inst.components.finiteuses:SetIgnoreCombatDurabilityLoss(true)

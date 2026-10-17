@@ -79,6 +79,11 @@ function LootDropper:AddIfNotChanceLoot(prefab)
     table.insert(self.ifnotchanceloot, { prefab = prefab })
 end
 
+function LootDropper:ClearChanceLoot()
+    self.chanceloot = nil
+    self.ifnotchanceloot = nil
+end
+
 function LootDropper:GetRandomLootTable()
     return (self.inst.components.hauntable and self.inst.components.hauntable.haunted) and self.randomhauntedloot
         or self.randomloot
@@ -325,14 +330,15 @@ function LootDropper:FlingItem(loot, pt)
         local max_speed = self.max_speed or 2
         local y_speed = self.y_speed or 8
         local y_speed_variance = self.y_speed_variance or 4
+        local y_offset = self.y_offset or 0
 
-        if loot.Physics ~= nil then
+        if loot.Physics ~= nil and not self.nofling then
             local angle = (self.flingtargetpos ~= nil and GetRandomWithVariance(self.inst:GetAngleToPoint(self.flingtargetpos), self.flingtargetvariance or 0) * DEGREES)
                 or math.random() * TWOPI
             local speed = min_speed + math.random() * (max_speed - min_speed)
             if loot:IsAsleep() then
                 local radius = .5 * speed + (self.inst.Physics ~= nil and loot:GetPhysicsRadius(1) + self.inst:GetPhysicsRadius(1) or 0)
-                loot.Transform:SetPosition(
+				TryTeleportToLaunchPos(loot,
                     pt.x + math.cos(angle) * radius,
                     0,
                     pt.z - math.sin(angle) * radius
@@ -340,26 +346,34 @@ function LootDropper:FlingItem(loot, pt)
             else
                 local sinangle = math.sin(angle)
                 local cosangle = math.cos(angle)
-                loot.Physics:SetVel(speed * cosangle, GetRandomWithVariance(y_speed, y_speed_variance), speed * -sinangle)
-
                 if self.inst ~= nil and self.inst.Physics ~= nil then
                     local radius = loot:GetPhysicsRadius(1) + self.inst:GetPhysicsRadius(1)
                     if not self.spawn_loot_inside_prefab then
-                        loot.Transform:SetPosition(
-                            pt.x + cosangle * radius,
-                            pt.y,
-                            pt.z - sinangle * radius
-                        )
+						if not TryTeleportToLaunchPos(loot,
+									pt.x + cosangle * radius,
+									pt.y + y_offset,
+									pt.z - sinangle * radius) and
+							y_offset > 0
+						then
+							loot.Physics:Teleport(pt.x, pt.y + y_offset, pt.z)
+						end
                     else
                         radius = radius * math.random()
-                        loot.Transform:SetPosition(
-                            pt.x + cosangle * radius,
-                            pt.y + 0.5,
-                            pt.z - sinangle * radius
-                        )
+						if not TryTeleportToLaunchPos(loot,
+									pt.x + cosangle * radius,
+									pt.y + y_offset + 0.5,
+									pt.z - sinangle * radius) and
+							y_offset + 0.5 > 0
+						then
+							loot.Physics:Teleport(pt.x, pt.y + y_offset + 0.5, pt.z)
+						end
                     end
                 end
-
+				loot.Physics:SetVel(speed * cosangle, GetRandomWithVariance(y_speed, y_speed_variance), speed * -sinangle)
+				--should already be set since loot was just spawned
+				--[[if loot.components.inventoryitem then
+					loot.components.inventoryitem:SetLanded(false, true)
+				end]]
             end
         end
     end
