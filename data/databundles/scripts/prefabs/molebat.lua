@@ -96,7 +96,7 @@ local function ShouldWake(inst)
 end
 
 local RETARGET_MUST_TAGS = { "_combat" }
-local RETARGET_CANT_TAGS = { "bat", "INLIMBO", "FX", "notarget", "noattack", "DECOR" }
+local RETARGET_CANT_TAGS = { "bat", "batdisguise", "INLIMBO", "FX", "notarget", "noattack", "DECOR" }
 local RETARGET_ONEOF_TAGS = { "character", "monster", "smallcreature" }
 local function Retarget(inst)
     local closest_bug = nil
@@ -306,6 +306,8 @@ local function fn()
     inst.components.lootdropper:AddRandomLoot("monstermeat", 2)
     inst.components.lootdropper:AddRandomLoot("batnose", 1)
     inst.components.lootdropper.numrandomloot = 1
+
+    inst:AddComponent("drownable")
 
     inst:AddComponent("eater")
     inst.components.eater:SetDiet({ FOODGROUP.OMNI }, { FOODGROUP.OMNI })

@@ -53,6 +53,7 @@ local function settarget(inst,target,life,source)
     local maxdeflect = 30
 
     if life > 0 then
+		inst.components.deflectable:SetOwner(source)
 
         inst.shadowfire_task = inst:DoTaskInTime(0.1,function()
 
@@ -118,39 +119,36 @@ local function settarget(inst,target,life,source)
             end
 
 			if target then
-                local dist = inst:GetDistanceSqToInst(target)
-
-                if dist<CLOSERANGE*CLOSERANGE then
-
-                    local blast = SpawnPrefab("willow_shadow_fire_explode")
-                    local pos = Vector3(target.Transform:GetWorldPosition())
-                    blast.Transform:SetPosition(pos.x,pos.y,pos.z)
-
-                    local weapon = inst
-
+				local x, y, z = inst.Transform:GetWorldPosition()
+				local x1, y1, z1 = target.Transform:GetWorldPosition()
+				local dx = x1 - x
+				local dz = z1 - z
+				local dsq = dx * dx + dz * dz
+				if dsq < CLOSERANGE * CLOSERANGE then
                     source.components.combat.ignorehitrange = true
                     source.components.combat.ignoredamagereflect = true
 
-                    source.components.combat:DoAttack(target, weapon)
+					source.components.combat:DoAttack(target, inst)
 
                     source.components.combat.ignorehitrange = false
                     source.components.combat.ignoredamagereflect = false
 
                     theta = nil
-                else
-                    local pt = Vector3(target.Transform:GetWorldPosition())
-                    local angle = inst:GetAngleToPoint(pt.x,pt.y,pt.z)
-                    local anglediff = angle - inst.Transform:GetRotation()
-                    if anglediff > 180 then
-                        anglediff = anglediff - 360
-                    elseif anglediff < -180 then
-                        anglediff = anglediff + 360
-                    end
-                    if math.abs(anglediff) > maxdeflect then
-                        anglediff = math.clamp(anglediff, -maxdeflect, maxdeflect)
-                    end
 
-                    theta = (inst.Transform:GetRotation() + anglediff) * DEGREES
+					if inst:IsValid() then -- removed if deflected
+						SpawnPrefab("willow_shadow_fire_explode").Transform:SetPosition(x1, y1, z1)
+					end
+                else
+					local rot = inst.Transform:GetRotation()
+					local angle = math.atan2(-dz, dx) * RADIANS
+					local anglediff = ReduceAngle(angle - rot)
+					if dsq < 9 then
+						local k = math.min(1, Remap(math.sqrt(dsq), CLOSERANGE, 3, 1, 0))
+						maxdeflect = maxdeflect * (1 + k * k)
+					end
+					anglediff = math.clamp(anglediff, -maxdeflect, maxdeflect)
+
+					theta = (rot + anglediff) * DEGREES
                 end
             else
                 if not inst.currentdeflection then
@@ -189,7 +187,7 @@ local function shadowfn()
 
     inst.AnimState:SetBank("shadow_fire_fx")
     inst.AnimState:SetBuild("shadow_fire_fx")
-    inst.AnimState:PlayAnimation("anim"..math.random(1,3),false)
+	inst.AnimState:PlayAnimation("anim1")
 
     inst.AnimState:SetMultColour(0, 0, 0, .6)
     inst.AnimState:SetFinalOffset(3)
@@ -197,12 +195,21 @@ local function shadowfn()
     inst:AddTag("FX")
     inst:AddTag("NOCLICK")
     inst:AddTag("willow_shadow_flame")
+	inst:AddTag("pseudorangedweapon")
+
+	--deflectable (from deflectable component) added to pristine state for optimization
+	inst:AddTag("deflectable")
 
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
         return inst
     end
+
+	local rnd = math.random(3)
+	if rnd ~= 1 then
+		inst.AnimState:PlayAnimation("anim"..tostring(rnd))
+	end
 
     inst.persists = false
 
@@ -217,16 +224,12 @@ local function shadowfn()
     inst:AddComponent("planardamage")
     inst.components.planardamage:SetBaseDamage(TUNING.WILLOW_LUNAR_FIRE_PLANAR_DAMAGE * 3)
 
-
     inst:AddComponent("damagetypebonus")
     inst.components.damagetypebonus:AddBonus("lunar_aligned", inst, TUNING.WILLOW_SHADOW_FIRE_BONUS)
 
+	inst:AddComponent("deflectable")
 
-    inst:ListenForEvent("animover", function()
-        if inst.AnimState:IsCurrentAnimation("anim1") or inst.AnimState:IsCurrentAnimation("anim2") or inst.AnimState:IsCurrentAnimation("anim3") then
-            inst:Remove()
-        end
-    end)
+	inst:ListenForEvent("animover", inst.Remove)
 
     inst.settarget = settarget
 
@@ -347,14 +350,14 @@ local function frenzyfn()
     inst:AddTag("FX")
     inst:AddTag("NOCLICK")
 
-    inst._kill = net_event(inst.GUID, "willow_frenzy._kill", "killdirty")
+	inst._kill = net_event(inst.GUID, "willow_frenzy._kill")
 
     inst.OnFrenzyKilled = OnFrenzyKilled
     inst.FrenzyDoOnClientInit = FrenzyDoOnClientInit
 
     -- Dedicated server does not need the fx.
     if not TheNet:IsDedicated() then
-        inst:ListenForEvent("killdirty", inst.OnFrenzyKilled)
+		inst:ListenForEvent("willow_frenzy._kill", inst.OnFrenzyKilled)
 
         inst:FrenzyDoOnClientInit()
     end

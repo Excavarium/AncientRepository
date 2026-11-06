@@ -15,6 +15,7 @@ local events=
 	CommonHandlers.OnSleep(),
 	CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
 	EventHandler("doattack", function(inst)
 		if inst.components.health and not inst.components.health:IsDead()
 			and ((inst.sg:HasStateTag("hit") and not inst.sg:HasStateTag("electrocute")) or not inst.sg:HasStateTag("busy")) then
@@ -27,6 +28,8 @@ local events=
 	end),
 	CommonHandlers.OnAttacked(),
 	CommonHandlers.OnDeath(),
+	CommonHandlers.OnSink(),
+	CommonHandlers.OnFallInVoid(),
 
 	EventHandler("flyaway", function(inst)
 		if not inst.components.health:IsDead() and not inst.sg:HasStateTag("busy") then
@@ -239,7 +242,7 @@ local states=
 
 	State{
 		name = "flyaway",
-		tags = { "flight", "busy", "noelectrocute" },
+		tags = { "flight", "busy", "noelectrocute", "noknockback" },
 		onenter = function(inst)
 			inst.Physics:Stop()
 			inst.DynamicShadow:Enable(false)
@@ -274,7 +277,7 @@ local states=
 
 	State{
 		name = "hatch",
-		tags = { "busy", "noelectrocute" },
+		tags = { "busy", "noelectrocute", "noknockback" },
 
 		onenter = function(inst)
 			local angle = math.random()*TWOPI
@@ -321,7 +324,7 @@ local states=
 
 	State{
 		name = "spin_loop",
-		tags = { "busy", "spinning", "noelectrocute" },
+		tags = { "busy", "spinning", "noelectrocute", "noknockback" },
 
 		onenter = function(inst)
 			inst.DynamicShadow:SetSize(2.5,1.25)
@@ -430,6 +433,9 @@ local states=
 
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
+CommonStates.AddKnockbackStates(states)
+CommonStates.AddSinkAndWashAshoreStates(states)
+CommonStates.AddVoidFallStates(states)
 CommonStates.AddWalkStates(states,
 {
 	walktimeline =

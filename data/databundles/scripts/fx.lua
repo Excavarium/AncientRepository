@@ -3714,6 +3714,54 @@ local fx =
 		fn = FinalOffset2,
     },
     {
+        name = "leafpile_spawn_fx",
+        bank = "leafpile",
+        build = "leafpile",
+        anim = "leaves_fall",
+        sound = "dontstarve_DLC001/fall/leaf_rustle_spawn_grow", -- TODO get a better sound from Andy (this one is so quiet, should be increased in general?)
+        fn = FinalOffset2,
+    },
+    {
+        name = "leafpile_shatter_fx",
+        bank = "leafpile",
+        build = "leafpile",
+        anim = "leaves_shatter",
+        sound = "dontstarve_DLC001/fall/leaf_rustle_sfx_os", -- TODO get a better sound from Andy
+        fn = FinalOffset2,
+    },
+    {
+        name = "leafpile_red_spawn_fx",
+        bank = "leafpile",
+        build = "leafpile_red_build",
+        anim = "leaves_fall",
+        sound = "dontstarve_DLC001/fall/leaf_rustle_spawn_grow", -- TODO get a better sound from Andy (this one is so quiet, should be increased in general?)
+        fn = FinalOffset2,
+    },
+    {
+        name = "leafpile_red_shatter_fx",
+        bank = "leafpile",
+        build = "leafpile_red_build",
+        anim = "leaves_shatter",
+        sound = "dontstarve_DLC001/fall/leaf_rustle_sfx_os", -- TODO get a better sound from Andy
+        fn = FinalOffset2,
+    },
+    {
+        name = "leafpile_yellow_spawn_fx",
+        bank = "leafpile",
+        build = "leafpile_yellow_build",
+        anim = "leaves_fall",
+        sound = "dontstarve_DLC001/fall/leaf_rustle_spawn_grow", -- TODO get a better sound from Andy (this one is so quiet, should be increased in general?)
+        fn = FinalOffset2,
+    },
+    {
+        name = "leafpile_yellow_shatter_fx",
+        bank = "leafpile",
+        build = "leafpile_yellow_build",
+        anim = "leaves_shatter",
+        sound = "dontstarve_DLC001/fall/leaf_rustle_sfx_os", -- TODO get a better sound from Andy
+        fn = FinalOffset2,
+    },
+    {
         name = "shadowthrall_parasite_attach_poof_fx",
         bank = "shadow_thrall_parasite_transition_fx",
         build = "shadow_thrall_parasite_transition_fx",
@@ -3955,6 +4003,45 @@ local fx =
 			inst.AnimState:SetScale(math.random() < .5 and scale or -scale, scale)
 		end,
     },
+    {
+        name = "charlie_circle_spawn_fx",
+        bank = "charlie_basic",
+        build = "charlie_basic",
+        anim = "circle_spawn_fx",
+    },
+    {
+        name = "charlie_circle_spawn_ground_fx",
+        bank = "charlie_basic",
+        build = "charlie_basic",
+        anim = "circle_spawn_fx_ground",
+        fn = GroundOrientation,
+    },
+	{
+		name = "atrium_portal_fx",
+		bank = "atrium_portal_fx",
+		build = "atrium_portal_fx",
+		anim = "activate",
+        fn = function(inst)
+            local parent = inst.entity:GetParent()
+            if parent and ThePlayer and ThePlayer == parent then
+                ThePlayer:PushEvent("shroudensummoned")
+                inst.Transform:SetPosition(inst.Transform:GetWorldPosition())
+                inst.entity:SetParent(nil)
+            end
+        end,
+	},
+	{
+		name = "goo_vines_break_fx",
+		bank = "charlie_boss_vines",
+		build = "charlie_boss_vines",
+		anim = "vine_break",
+		sound = "rifts/lunarthrall/vine_death",
+		fn = function(inst)
+			inst.AnimState:SetFinalOffset(2)
+			inst.AnimState:SetLightOverride(1)
+			--inst.AnimState:SetSymbolLightOverride("cb_vine_red", 1)
+		end,
+	},
 }
 
 for cratersteamindex = 1, 4 do

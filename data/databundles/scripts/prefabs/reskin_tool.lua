@@ -400,6 +400,11 @@ local function tool_fn()
     inst:AddComponent("fuel")
     inst.components.fuel.fuelvalue = TUNING.MED_FUEL
 
+    if IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
+        inst:AddComponent("sweeper")
+        inst.components.sweeper:SetSweepSound("yotr_2023/common/pillow_hit_petals")
+    end
+
     MakeSmallBurnable(inst, TUNING.SMALL_BURNTIME)
     MakeSmallPropagator(inst)
     MakeHauntableLaunchAndIgnite(inst)
