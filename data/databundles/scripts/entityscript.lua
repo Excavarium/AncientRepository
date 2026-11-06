@@ -581,7 +581,6 @@ function EntityScript:HasTags(...)
         return self.entity:HasAllTags(...)
     end
 end
-EntityScript.HasAllTags = EntityScript.HasTags
 
 function EntityScript:HasOneOfTags(...)
     local tags = select(1, ...)
@@ -591,6 +590,29 @@ function EntityScript:HasOneOfTags(...)
         return self.entity:HasAnyTag(...)
     end
 end
+
+if BRANCH == "dev" then
+	local _hastag = EntityScript.HasTag
+	local _hastags = EntityScript.HasTags
+	local _hasoneoftags = EntityScript.HasOneOfTags
+
+	function EntityScript:HasTag(...)
+		assert(select('#', ...) == 1 and type(select(1, ...)) ~= "table", "Did you mean to use HasAllTags or HasAnyTag?")
+		return _hastag(self, ...)
+	end
+
+	function EntityScript:HasTags(...)
+		assert(select('#', ...) > 1 or type(select(1, ...)) == "table", "Did you mean to use HasTag?")
+		return _hastags(self, ...)
+	end
+
+	function EntityScript:HasOneOfTags(...)
+		assert(select('#', ...) > 1 or type(select(1, ...)) == "table", "Did you mean to use HasTag?")
+		return _hasoneoftags(self, ...)
+	end
+end
+
+EntityScript.HasAllTags = EntityScript.HasTags
 EntityScript.HasAnyTag = EntityScript.HasOneOfTags
 
 require("entityreplica")
@@ -746,7 +768,9 @@ end
 
 --Can NOT be used on clients
 function EntityScript:GetWetMultiplier()
-	if self:HasTag("wet") then
+    if not self:IsValid() then
+        return 0
+	elseif self:HasTag("wet") then
 		return 1
 	elseif self:HasTag("moistureimmunity") then
         return 0
@@ -760,7 +784,7 @@ function EntityScript:GetWetMultiplier()
     else
         return
         (
-			(TheWorld.state.iswet and not self:HasTag("rainimmunity")) or
+			(TheWorld.state.iswet and not self:HasTag("rainimmunity") and TheWorld.Map:CanPointHaveRain(self.Transform:GetWorldPosition())) or
 			(self:HasTag("swimming") and not self:HasTag("likewateroffducksback"))
         ) and 1 or 0
     end
@@ -768,7 +792,9 @@ end
 
 --Can be used on clients
 function EntityScript:GetIsWet()
-	if self:HasTag("wet") then
+    if not self:IsValid() then
+        return false
+	elseif self:HasTag("wet") then
 		return true
 	elseif self:HasTag("moistureimmunity") then
         return false
@@ -778,7 +804,7 @@ function EntityScript:GetIsWet()
     if replica then
         return replica:IsWet()
     else
-		return (TheWorld.state.iswet and not self:HasTag("rainimmunity"))
+		return (TheWorld.state.iswet and not self:HasTag("rainimmunity") and TheWorld.Map:CanPointHaveRain(self.Transform:GetWorldPosition()))
             or (self:HasTag("swimming") and not self:HasTag("likewateroffducksback"))
     end
 end
@@ -1397,10 +1423,9 @@ end
 
 -- consider using IsNear if you're checking if something is inside/outside a certain horizontal distance
 function EntityScript:GetDistanceSqToInst(inst)
-    assert(self:IsValid() and inst:IsValid())
-    local p1x, p1y, p1z = self.Transform:GetWorldPosition()
-    local p2x, p2y, p2z = inst.Transform:GetWorldPosition()
-    return distsq(p1x, p1z, p2x, p2z)
+	local p1x, _, p1z = self.Transform:GetWorldPosition()
+	local p2x, _, p2z = inst.Transform:GetWorldPosition()
+	return math2d.DistSq(p1x, p1z, p2x, p2z)
 end
 
 function EntityScript:IsNear(otherinst, dist)
@@ -1412,8 +1437,8 @@ function EntityScript:GetDistanceSqToPoint(x, y, z)
     if x and not y and not z then
         x, y, z = x:Get()
     end
-    local x1, y1, z1 = self.Transform:GetWorldPosition()
-    return distsq(x, z, x1, z1)
+	local x1, _, z1 = self.Transform:GetWorldPosition()
+	return math2d.DistSq(x, z, x1, z1)
 end
 
 function EntityScript:IsNearPlayer(range, isalive)
@@ -1428,8 +1453,8 @@ end
 
 function EntityScript:GetDistanceSqToClosestPlayer(isalive)
     local x, y, z = self.Transform:GetWorldPosition()
-    local player, distsq = FindClosestPlayer(x, y, z, isalive)
-    return distsq or math.huge
+	local player, dsq = FindClosestPlayer(x, y, z, isalive)
+	return dsq or math.huge
 end
 
 function EntityScript:FaceAwayFromPoint(dest, force)

@@ -1930,18 +1930,6 @@ local function OnSharkSound(inst)
     end
 end
 
-local function OnWormDigestionSound(inst)
-    if ThePlayer ~= nil and  ThePlayer == inst then
-        if inst._wormdigestionsound:value() == true then
-            if not TheFocalPoint.SoundEmitter:PlayingSound("worm_boss_digest") then
-                TheFocalPoint.SoundEmitter:PlaySound("rifts4/worm_boss/beingdigested_lp" ,"worm_boss_digest")
-            end
-        else
-            TheFocalPoint.SoundEmitter:KillSound("worm_boss_digest")
-        end
-    end 
-end
-
 local BLACKOUT_COLOURCUBES =
 {
     day = "images/colour_cubes/blackout_cc.tex",
@@ -2199,6 +2187,8 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         Asset("ANIM", "anim/player_lancejab.zip"),
 
 		Asset("ANIM", "anim/player_actions_golf.zip"),
+
+        Asset("ANIM", "anim/player_witchbroom_run.zip"),
     }
 
     local prefabs =
@@ -2576,7 +2566,6 @@ end
         inst._lunarportalmax = net_event(inst.GUID, "localplayer._lunarportalmax")
         inst._shadowportalmax = net_event(inst.GUID, "localplayer._shadowportalmax")
         inst._skilltreeactivatedany = net_event(inst.GUID, "localplayer._skilltreeactivatedany")
-        inst._wormdigestionsound = net_bool(inst.GUID, "localplayer._wormdigestionsound","wormdigestionsounddirty")
         inst._parasiteoverlay = net_bool(inst.GUID, "localplayer._parasiteoverlay","parasiteoverlaydirty")
         inst._parasiteoverlay:set(false)
         inst._blackout = net_bool(inst.GUID, "localplayer._blackout","blackoutdirty")
@@ -2600,7 +2589,6 @@ end
         end
 
         inst:ListenForEvent("sharksounddirty", OnSharkSound)
-        inst:ListenForEvent("wormdigestionsounddirty", OnWormDigestionSound)        
         --inst:ListenForEvent("underleafcanopydirty", OnUnderLeafCanopy)
 
         inst:ListenForEvent("finishseamlessplayerswap", onfinishseamlessplayerswap)

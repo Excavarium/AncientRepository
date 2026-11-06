@@ -240,7 +240,9 @@ CONTROL_PRESET_DPAD_RIGHT = 99
 CONTROL_AXISALIGNEDPLACEMENT_TOGGLEMOD = 100
 CONTROL_AXISALIGNEDPLACEMENT_CYCLEGRID = 101
 
-CONTROL_CUSTOM_START = 102 -- NOTES(JBK): This might not be used for anything keep it above our last control in case mods are using it for something.
+CONTROL_SEND_FEEDBACK = 102
+
+CONTROL_CUSTOM_START = 103 -- NOTES(JBK): This might not be used for anything keep it above our last control in case mods are using it for something.
 
 -- virtual controls
 VIRTUAL_CONTROL_START = 10000
@@ -670,6 +672,8 @@ ITEMTAG =
     FX = "FX",
 }
 
+-- NOTE: These constants aren't used anywhere. Anchor uses TUNING.ANCHOR_DEPTH_TIMES
+-- this also is missing the "BASIC" ocean depth anyways.
 OCEAN_DEPTH =
 {
     SHALLOW = 1,
@@ -851,7 +855,7 @@ SPECIAL_EVENTS =
     YOTS = "year_of_the_snake",
     YOTH = "year_of_the_knight",
 }
-WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.CARNIVAL
+WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.HALLOWED_NIGHTS
 WORLD_EXTRA_EVENTS = {}
 
 FESTIVAL_EVENTS =
@@ -905,8 +909,8 @@ SPECIAL_EVENT_MUSIC =
 	--hallowed nights
 	[SPECIAL_EVENTS.HALLOWED_NIGHTS] =
 	{
-		bank = "music_frontend_hallowednights2024.fsb",
-		sound = "dontstarve/music/music_FE_hallowednights2025",
+		bank = "music_frontend_rifts8.fsb",
+		sound = "dontstarve/music/music_FE_rifts8",
 	},
 
     --winter's feast carol
@@ -1013,8 +1017,8 @@ FESTIVAL_EVENT_MUSIC =
 
 DEFAULT_FE_MUSIC =
 {
-	bank = "music_frontend_rifts7.fsb",
-	sound = "dontstarve/music/music_FE_rifts7",
+	bank = "music_frontend_rifts8.fsb",
+	sound = "dontstarve/music/music_FE_rifts8",
 
 	--bank = "music_frontend_WX.fsb",
 	--sound = "dontstarve/music/music_FE_WX",
@@ -1227,7 +1231,7 @@ PICKUPSOUNDS = {
 
 ---------------------------------------------------------
 NUM_HALLOWEENCANDY = 14
-NUM_HALLOWEEN_ORNAMENTS = 6
+NUM_HALLOWEEN_ORNAMENTS = 10
 NUM_HALLOWEEN_PUMPKINCARVERS = 3
 NUM_WINTERFOOD = 9
 
@@ -2266,7 +2270,11 @@ TROPHYSCALE_TYPES =
 
 NAUGHTY_VALUE =
 {
-    ["pigman"] = 3,
+    ["pigman"] = function(player, data) -- franken and werepigs don't trigger naughtiness
+        local victim = data and data.victim
+        return (victim and ((victim.components.werebeast and victim.components.werebeast:IsInWereState()) or victim.franken)) and 0
+            or 3
+    end,
     ["babybeefalo"] = 6,
     ["teenbird"] = 2,
     ["smallbird"] = 6,
@@ -2281,7 +2289,7 @@ NAUGHTY_VALUE =
     ["rabbit"] = 1,
     ["mole"] = 1,
     ["tallbird"] = 2,
-    ["bunnyman"] = 3,
+	["bunnyman"] = function(player, data) return data and data.victim and data.victim.vampire and 0 or 3 end,
     ["penguin"] = 2,
     ["glommer"] = 50, -- You've been bad!
     ["catcoon"] = 5,
@@ -2352,6 +2360,7 @@ DST_NPCCHATTERLIST =
 {
     "none", -- Default chatter/image name
 
+    "charlie",
     "daywalker",
     "daywalker_scrap",
     "hermitcrab",
@@ -3039,3 +3048,81 @@ SOCKETQUALITY = { -- NOTES(JBK): Keep this value updated in export_accountitems.
     PERFECT = 4,
 }
 SOCKETQUALITY_MAXVALUE = table.count(SOCKETQUALITY)
+
+MAX_VIRTUALROOMSETS = 32 -- NOTES(JBK): Keep in sync with the engine side implementation. [MVRSNS]
+VIRTUALROOMSETS = {
+    VAULT = "VAULT",
+    LOBBYVAULT = "LOBBYVAULT", -- Intentionally backwards for search string isolation.
+    ATRIUM = "ATRIUM",
+}
+VIRTUALROOMSETHASHTONAME = {}
+if rawget(_G, "TheSim") then -- updateprefabs guard and rawget is used for worldgen without hash function defined
+    for _, roomsetname in pairs(VIRTUALROOMSETS) do
+        VIRTUALROOMSETHASHTONAME[hash(roomsetname)] = roomsetname
+    end
+end
+VIRTUALROOMSETNAMETOHASH = table.invert(VIRTUALROOMSETHASHTONAME)
+VIRTUALROOMCONTEXT = {
+    NONE = "NONE", -- Default fallback.
+    MARKER = "MARKER",
+    TELEPORTER = "TELEPORTER",
+}
+VIRTUALROOMDIRECTIONS_INDEX = {
+    -- Carindal directions.
+    "N",
+    "E",
+    "S",
+    "W",
+    -- Extra dimensions.
+    "IN",
+    "OUT",
+}
+VIRTUALROOMDIRECTIONS = table.invert(VIRTUALROOMDIRECTIONS_INDEX)
+VIRTUALROOMDIRECTIONS_MAX_SHUFFLE_INDEX = VIRTUALROOMDIRECTIONS.W -- Only shuffle the cardinals.
+VIRTUALROOMLOBBY = "virtualroomlobby" -- Special name for where a part of the map is used for virtual rooms to exist at before changing rooms.
+
+VIRTUALROOM_DONOTCARE_TILE = "x"
+VIRTUALROOM_BOUNDINGBOXES = {
+    [VIRTUALROOMSETS.VAULT] = {
+        minx = -5, miny = -5,
+        maxx = 5, maxy = 5,
+        mask = { -- Can be nil for a solid box. Index 1 is at minx, miny so this is visually flipped vertically.
+            0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+            0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0,
+        },
+    },
+    [VIRTUALROOMSETS.LOBBYVAULT] = {
+        minx = -3, miny = -3,
+        maxx = 4, maxy = 4,
+        mask = { -- Can be nil for a solid box. Index 1 is at minx, miny so this is visually flipped vertically.
+            0, 0, 1, 1, 1, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 0, 0,
+            1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1,
+            0, 1, 1, 1, 1, 1, 0, 0,
+            0, 0, 1, 1, 1, 0, 0, 0,
+            0, 0, 1, 1, 1, 0, 0, 0,
+        },
+    },
+    [VIRTUALROOMSETS.ATRIUM] = {
+        minx = -10, miny = -10,
+        maxx = 10, maxy = 10,
+        mask = nil, -- Can be nil for a solid box. Index 1 is at minx, miny so this is visually flipped vertically.
+    },
+}
+
+CHARACTER_KNOWS_CHARLIE =
+{
+    winona = true,
+    waxwell = true,
+}

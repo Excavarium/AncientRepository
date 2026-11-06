@@ -15,6 +15,7 @@ local events=
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
     CommonHandlers.OnLocomote(false,true),
@@ -371,7 +372,7 @@ local states=
 
     State{
         name = "pounceplayaction",
-        tags = {"canrotate", "busy", "jumping"},
+		tags = { "busy", "jumping" },
 
         onenter = function(inst, target)
             inst.target = target
@@ -429,7 +430,7 @@ local states=
 
     State{
         name = "pounceattack",
-        tags = {"attack", "canrotate", "busy", "jumping"},
+		tags = { "attack", "busy", "jumping" },
 
         onenter = function(inst, target)
             inst.components.locomotor:Stop()
@@ -480,7 +481,7 @@ local states=
 
     State{
         name = "pounceplay",
-        tags = {"canrotate", "busy", "jumping"},
+		tags = { "busy", "jumping" },
 
         onenter = function(inst, target)
             inst.target = target
@@ -572,6 +573,7 @@ CommonStates.AddSleepStates(states,
 })
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
+CommonStates.AddKnockbackStates(states)
 CommonStates.AddHopStates(states, true, {pre = "walK_pre", loop = "jump_atk", pst = "walk_pst"})
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)

@@ -431,7 +431,7 @@ Recipe2("pumpkin_lantern",					{Ingredient("pumpkin", 1), Ingredient("fireflies"
 Recipe2("minerhat",							{Ingredient("strawhat", 1),Ingredient("goldnugget", 1),Ingredient("fireflies", 1)},				TECH.SCIENCE_TWO)
 Recipe2("molehat",							{Ingredient("mole", 2), Ingredient("transistor", 2), Ingredient("wormlight", 1)},				TECH.SCIENCE_TWO)
 Recipe2("lantern",							{Ingredient("twigs", 3), Ingredient("rope", 2), Ingredient("lightbulb", 2)},					TECH.SCIENCE_TWO)
-Recipe2("nightlight",						{Ingredient("goldnugget", 8), Ingredient("nightmarefuel", 2), Ingredient("redgem", 1)},			TECH.MAGIC_TWO,				{placer="nightlight_placer",		min_spacing=1.5})
+Recipe2("nightlight",						{Ingredient("goldnugget", 4), Ingredient("nightmarefuel", 2), Ingredient("redgem", 1)},			TECH.MAGIC_TWO,				{placer="nightlight_placer",		min_spacing=1.5})
 Recipe2("dragonflyfurnace",					{Ingredient("dragon_scales", 1), Ingredient("redgem", 2), Ingredient("charcoal", 10)},			TECH.LOST,					{placer="dragonflyfurnace_placer",	min_spacing=2.5})
 Recipe2("mushroom_light",					{Ingredient("shroom_skin", 1), Ingredient("fertilizer", 1, nil, true)},							TECH.LOST,					{placer="mushroom_light_placer",	min_spacing=1})
 Recipe2("mushroom_light2",					{Ingredient("shroom_skin", 1), Ingredient("fertilizer", 1, nil, true), Ingredient("boards", 1)},TECH.LOST,					{placer="mushroom_light2_placer",	min_spacing=1})
@@ -539,7 +539,6 @@ Recipe2("goggleshat", 						{Ingredient("goldnugget", 1), Ingredient("pigskin", 
 Recipe2("deserthat", 						{Ingredient("goggleshat", 1), Ingredient("pigskin", 1)}, 										TECH.LOST)
 Recipe2("moonstorm_goggleshat", 			{Ingredient("moonglass", 2),Ingredient("potato", 1)}, 											TECH.LOST)
 Recipe2("watermelonhat", 					{Ingredient("watermelon", 1), Ingredient("twigs", 3)}, 											TECH.SCIENCE_ONE)
-Recipe2("pumpkinhat", 						{Ingredient("pumpkin", 1)},							 											TECH.HALLOWED_NIGHTS)
 Recipe2("icehat",							{Ingredient("rope", 2), Ingredient("ice", 10)}, 												TECH.SCIENCE_TWO)
 Recipe2("beehat", 							{Ingredient("silk", 8), Ingredient("rope", 1)}, 												TECH.SCIENCE_TWO)
 Recipe2("featherhat", 						{Ingredient("feather_crow", 3),Ingredient("feather_robin", 2), Ingredient("tentaclespots", 2)}, TECH.SCIENCE_TWO)
@@ -923,6 +922,11 @@ Recipe2("chesspiece_wagboss_robot_builder",		{Ingredient(TECH_INGREDIENT.SCULPTI
 Recipe2("chesspiece_wagboss_lunar_builder",		{Ingredient(TECH_INGREDIENT.SCULPTING, 2), Ingredient("rocks", 2)},									TECH.LOST,					{nounlock = true, actionstr="SCULPTING", image="chesspiece_wagboss_lunar.tex"})
 Recipe2("chesspiece_yoth_builder",				{Ingredient(TECH_INGREDIENT.SCULPTING, 2), Ingredient("rocks", 2)},									TECH.LOST,					{nounlock = true, actionstr="SCULPTING", image="chesspiece_yoth.tex"})
 Recipe2("chesspiece_vault_pillar_guard_builder",{Ingredient(TECH_INGREDIENT.SCULPTING, 2), Ingredient("rocks", 2)},									TECH.LOST,					{nounlock = true, actionstr="SCULPTING", image="chesspiece_vault_pillar_guard.tex"})
+Recipe2("chesspiece_batboss_shadow_builder",	{Ingredient(TECH_INGREDIENT.SCULPTING, 2), Ingredient("rocks", 2)},									TECH.LOST,					{nounlock = true, actionstr="SCULPTING", image="chesspiece_batboss_shadow.tex"})
+Recipe2("chesspiece_rockyboss_shadow_builder",	{Ingredient(TECH_INGREDIENT.SCULPTING, 2), Ingredient("rocks", 2)},									TECH.LOST,					{nounlock = true, actionstr="SCULPTING", image="chesspiece_rockyboss_shadow.tex"})
+Recipe2("chesspiece_wormboss_shadow_builder",	{Ingredient(TECH_INGREDIENT.SCULPTING, 2), Ingredient("rocks", 2)},									TECH.LOST,					{nounlock = true, actionstr="SCULPTING", image="chesspiece_wormboss_shadow.tex"})
+Recipe2("chesspiece_charlie_boss_builder",		{Ingredient(TECH_INGREDIENT.SCULPTING, 2), Ingredient("rocks", 2)},									TECH.LOST,					{nounlock = true, actionstr="SCULPTING", image="chesspiece_charlie_boss.tex"})
+Recipe2("chesspiece_shrouden_builder",			{Ingredient(TECH_INGREDIENT.SCULPTING, 2), Ingredient("rocks", 2)},									TECH.LOST,					{nounlock = true, actionstr="SCULPTING", image="chesspiece_shrouden.tex"})
 
 -- Hermitcrab
 Recipe2("hermitshop_hermit_bundle_shells",				{Ingredient("messagebottleempty", 1)},														TECH.HERMITCRABSHOP_ONE,	{nounlock = true, sg_state="give", product="hermit_bundle_shells",		image="hermit_bundle.tex", actionstr="HERMITCRABSHOP"})
@@ -1081,6 +1085,10 @@ Recipe2("healingsalve_fumarole",		{Ingredient("ash", 2),   Ingredient("flint", 1
 
 Recipe2("vault_orb_refined",			{Ingredient("vault_orb", 1)},																							TECH.VAULT_REFINE_ONE, { nounlock = true, no_deconstruction = true, numtogive = 3 })
 Recipe2("vault_pillar_guard_constr_plans", {Ingredient("vault_pillar_guard_piece_1", 1), Ingredient("vault_pillar_guard_piece_2", 1), Ingredient("vault_pillar_guard_piece_3", 2)}, TECH.VAULT_REFINE_ONE, { nounlock = true })
+
+-- RIFTS 8
+
+
 
 ------------------------------- SPECIAL EVENTS -------------------------------
 
@@ -1403,6 +1411,8 @@ Recipe2("carnivalgame_golfprop_cutout10",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {n
 -- HALLOWED_NIGHTS
 Recipe2("madscience_lab",				{Ingredient("cutstone", 2), Ingredient("transistor", 2)},																TECH.HALLOWED_NIGHTS,			{placer="madscience_lab_placer", min_spacing=2.5, hint_msg = "NEEDSHALLOWED_NIGHTS"})
 Recipe2("candybag",						{Ingredient("cutgrass", 6)},																							TECH.HALLOWED_NIGHTS,			{hint_msg = "NEEDSHALLOWED_NIGHTS"})
+Recipe2("pumpkinhat",					{Ingredient("pumpkin", 1)},							 																	TECH.HALLOWED_NIGHTS,			{hint_msg = "NEEDSHALLOWED_NIGHTS"})
+Recipe2("witchbroom",					{Ingredient("twigs", 2), Ingredient("rope", 1), Ingredient("cutgrass", 3)},												TECH.HALLOWED_NIGHTS,			{hint_msg = "NEEDSHALLOWED_NIGHTS"})
 Recipe2("halloween_experiment_bravery", {Ingredient("froglegs", 1), Ingredient("goldnugget", 1), Ingredient(CHARACTER_INGREDIENT.SANITY, 10)},					TECH.MADSCIENCE_ONE,			{nounlock = true, manufactured=true, actionstr="MADSCIENCE", image ="halloweenpotion_bravery_small.tex"})
 Recipe2("halloween_experiment_health", 	{Ingredient("mosquito", 1), Ingredient("red_cap", 1), Ingredient(CHARACTER_INGREDIENT.SANITY, 10)},						TECH.MADSCIENCE_ONE,			{nounlock = true, manufactured=true, actionstr="MADSCIENCE", image ="halloweenpotion_health_small.tex"})
 Recipe2("halloween_experiment_sanity", 	{Ingredient("crow", 1), Ingredient("petals_evil", 1), Ingredient(CHARACTER_INGREDIENT.SANITY, 10)},						TECH.MADSCIENCE_ONE,			{nounlock = true, manufactured=true, actionstr="MADSCIENCE", image ="halloweenpotion_sanity_small.tex"})
@@ -1537,7 +1547,7 @@ CONSTRUCTION_PLANS =
 	["wagboss_robot_constructionsite"] = { Ingredient("wagboss_robot_creation_parts", 3) },
 
 	-- rifts 7
-	["charlie_hand_keystone"] =		{ Ingredient("vault_key", 1) },
+	["charlie_hand_keystone"] =		{ Ingredient("atrium_key", 1), Ingredient("vault_key", 1) }, -- NOTE(OMAR): This recipe is mutated during gameplay, see charlie_hand.lua for why
 	["vault_pillar_guard_constr"] = { Ingredient("thulecite", 8), Ingredient("moonrocknugget", 8), Ingredient("cutstone", 8) },
 }
 CONSTRUCTION_PLANS["support_pillar_scaffold"] = CONSTRUCTION_PLANS["support_pillar"]
@@ -1675,6 +1685,8 @@ DeconstructRecipe("vault_compass",					{Ingredient("thulecite_pieces", 1), Ingre
 DeconstructRecipe("vault_pillar_guard_piece_1",		{Ingredient("thulecite_pieces", 1), Ingredient("moonrocknugget", 2)})
 DeconstructRecipe("vault_pillar_guard_piece_2",		{Ingredient("thulecite_pieces", 2), Ingredient("trinket_6", 1)})
 DeconstructRecipe("vault_pillar_guard_piece_3",		{Ingredient("thulecite_pieces", 1), Ingredient("moonrocknugget", 1)})
+DeconstructRecipe("bat_bosscorpsehat",              {Ingredient("batwing", 2), Ingredient("houndstooth", 4), Ingredient("monstermeat", 1) })
+DeconstructRecipe("armor_rocky",              		{Ingredient("rocks", 8), Ingredient("flint", 4) })
 
 for k = 1, NUM_HALLOWEEN_PUMPKINCARVERS do
 	DeconstructRecipe("pumpkincarver"..tostring(k),	{Ingredient("pumpkin_seeds", 1), Ingredient("flint", 1)})
