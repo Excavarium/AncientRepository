@@ -1,7 +1,7 @@
 {
   "original_name": "vstdlib_s64.dll",
   "relative_hint": "vstdlib_s64.dll",
-  "sha256": "a503a42f168d4f50db6a11b942d0da907c7c83e0541cec01499a469e4351b2d5",
-  "size": 486040,
+  "sha256": "99efb4c2ad47f90c803b5ee0bd6424916b28facb9fa2568845b1b1f58a36062a",
+  "size": 487576,
   "note": "Binary stripped from AncientRepository; hash retained for change detection."
 }

@@ -380,6 +380,8 @@ CRAFTING_FILTERS.SPECIAL_EVENT.recipes =
 
 	"madscience_lab",
 	"candybag",
+	"pumpkinhat",
+	"witchbroom",
 
 	"perdshrine",
 	"wargshrine",
@@ -646,6 +648,11 @@ CRAFTING_FILTERS.CRAFTING_STATION.recipes =
 	"chesspiece_wagboss_lunar_builder",
 	"chesspiece_yoth_builder",
 	"chesspiece_vault_pillar_guard_builder",
+	"chesspiece_batboss_shadow_builder",
+	"chesspiece_rockyboss_shadow_builder",
+	"chesspiece_wormboss_shadow_builder",
+	"chesspiece_charlie_boss_builder",
+	"chesspiece_shrouden_builder",
 
 	-- wintersfeastoven
 	"wintercooking_berrysauce",
@@ -899,6 +906,7 @@ CRAFTING_FILTERS.TOOLS.recipes =
 	"compass",
 	"walking_stick",
 	"cane",
+	"witchbroom",
 	"fence_rotator",
 	"sewing_kit",
 	"sewing_tape",

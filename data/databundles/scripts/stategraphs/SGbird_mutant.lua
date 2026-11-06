@@ -17,6 +17,7 @@ local events =
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
 
     EventHandler("death", function(inst)
 		inst.sg:GoToState("death", "death")
@@ -25,9 +26,9 @@ local events =
         inst.sg:GoToState("glide")
     end),
 
-    EventHandler("doattack", function(inst)
-        if not (inst.sg:HasStateTag("busy")) then
-            inst.sg:GoToState("attack")
+	EventHandler("doattack", function(inst, data)
+		if not inst.sg:HasStateTag("busy") then
+			inst.sg:GoToState("attack", data and data.target)
         end
     end),
 
@@ -77,7 +78,7 @@ local states=
 
     State{
         name = "emerge",
-		tags = { "busy", "noattack", "canrotate", "noelectrocute" },
+		tags = { "busy", "noattack", "canrotate", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
             inst.components.locomotor:Stop()
@@ -110,22 +111,24 @@ local states=
         name = "attack",
         tags = { "busy", "attack"},
 
-        onenter = function(inst)
+		onenter = function(inst, target)
             inst.AnimState:PlayAnimation("attack")
 			inst.components.locomotor:Stop()
-			if inst.components.combat.target ~= nil then
-				inst:ForceFacePoint(inst.components.combat.target.Transform:GetWorldPosition())
+
+			inst.components.combat:StartAttack()
+			if target and target:IsValid() then
+				inst:ForceFacePoint(target.Transform:GetWorldPosition())
+				inst.sg.statemem.target = target
 			end
-	        inst.components.combat:StartAttack()
             inst.SoundEmitter:PlaySound(inst.sounds.attack)
 		end,
 
         timeline=
         {
             TimeEvent(8*FRAMES, function(inst)
-					inst.components.combat:DoAttack()
-                    inst.components.combat:DropTarget()
-				end ),
+				inst.components.combat:DoAttack(inst.sg.statemem.target)
+				inst.components.combat:DropTarget()
+			end),
         },
 
         events =
@@ -256,7 +259,8 @@ local states=
 
     State{
         name = "glide",
-		tags = { "busy", "noelectrocute" },
+		tags = { "busy", "noelectrocute", "noknockback" },
+
         onenter = function(inst)
             inst.Physics:SetDamping(0)
             inst.Physics:SetMotorVel(0, math.random() * 10 - 20, 0)
@@ -310,7 +314,7 @@ local states=
 
     State{
         name = "trapped",
-		tags = { "busy", "noelectrocute" },
+		tags = { "busy", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
             inst.Physics:Stop()
@@ -351,6 +355,22 @@ local states=
 CommonStates.AddSleepStates(states)
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
+
+local function _idleonanimover(inst)
+	if inst.AnimState:AnimDone() then
+		inst.sg:GoToState("idle")
+	end
+end
+
+CommonStates.AddKnockbackStates(states,
+nil, --timelines
+nil, --anims
+{ --fns
+	knockback_onanimover = _idleonanimover,
+	knockbacklanded_onanimover =_idleonanimover,
+})
+
+_idleonanimover = nil
 
 -- Mutant birds use a different sg, so we only use the _pst here!
 CommonStates.AddLunarPreRiftMutationStates(states,

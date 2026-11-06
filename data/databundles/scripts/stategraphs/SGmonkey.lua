@@ -16,9 +16,12 @@ local events=
     CommonHandlers.OnLocomote(false, true),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
     CommonHandlers.OnSleep(),
+	CommonHandlers.OnSink(),
+	CommonHandlers.OnFallInVoid(),
     EventHandler("doattack", function(inst, data)
         if inst.components.health and not (inst.components.health:IsDead() or inst.sg:HasStateTag("busy")) then
             --If you're not in melee range throw instead.
@@ -243,6 +246,9 @@ nil,
 
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
+CommonStates.AddKnockbackStates(states)
+CommonStates.AddSinkAndWashAshoreStates(states)
+CommonStates.AddVoidFallStates(states)
 
 CommonStates.AddInitState(states, "idle")
 CommonStates.AddCorpseStates(states)

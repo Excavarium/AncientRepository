@@ -756,6 +756,9 @@ lighter_clear_fn = function(inst) basic_clear_fn(inst, "lighter" ) end
 spear_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "swap_spear" ) end
 spear_clear_fn = function(inst) basic_clear_fn(inst, "swap_spear" ) end
 
+waterballoon_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "waterballoon" ) end
+waterballoon_clear_fn = function(inst) basic_clear_fn(inst, "waterballoon" ) end
+
 spear_wathgrithr_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "swap_spear_wathgrithr" ) end
 spear_wathgrithr_clear_fn = function(inst) basic_clear_fn(inst, "swap_spear_wathgrithr" ) end
 spear_wathgrithr_lightning_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "spear_wathgrithr_lightning" ) end
@@ -1697,6 +1700,59 @@ armor_lunarplant_husk_clear_fn = function(inst) basic_clear_fn(inst, "armor_luna
 
 wagdrone_rolling_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "wagdrone_rolling") end
 wagdrone_rolling_clear_fn = function(inst) basic_clear_fn(inst, "wagdrone_rolling") end
+
+thurible_init_fn = function(inst, build_name)
+    basic_init_fn(inst, build_name, "thurible")
+    if inst._body then
+        inst._body.AnimState:SetSkin(build_name, "thurible")
+    end
+end
+thurible_clear_fn = function(inst)
+    basic_clear_fn(inst, "thurible")
+    if inst._body then
+        inst._body.AnimState:SetBuild("thurible")
+    end
+end
+
+voidclothhat_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "hat_voidcloth") end
+voidclothhat_clear_fn = function(inst) basic_clear_fn(inst, "hat_voidcloth") end
+
+armor_voidcloth_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "armor_voidcloth") end
+armor_voidcloth_clear_fn = function(inst) basic_clear_fn(inst, "armor_voidcloth") end
+
+armor_rocky_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "armor_rocky") end
+armor_rocky_clear_fn = function(inst) basic_clear_fn(inst, "armor_rocky") end
+
+bat_bosscorpsehat_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "hat_bat_bosscorpse") end
+bat_bosscorpsehat_clear_fn = function(inst) basic_clear_fn(inst, "hat_bat_bosscorpse") end
+
+king_cane_init_fn = function(inst, build_name)
+    basic_init_fn(inst, build_name, "king_cane")
+    if inst.fx then
+        inst.fx.AnimState:OverrideItemSkinSymbol("swap_king_cane_art", build_name, "swap_king_cane_art", inst.GUID, "king_cane")
+        inst.fx.AnimState:OverrideItemSkinSymbol("king_cane01", build_name, "king_cane01", inst.GUID, "king_cane")
+    end
+    if inst.gem then
+        inst.components.inventoryitem:ChangeImageName(build_name .. "_" .. inst.gem)
+    else
+        inst.components.inventoryitem:ChangeImageName(build_name)
+    end
+end
+king_cane_clear_fn = function(inst)
+    basic_clear_fn(inst, "king_cane")
+    if inst.fx then
+        inst.fx.AnimState:ClearOverrideSymbol("swap_king_cane_art")
+        inst.fx.AnimState:ClearOverrideSymbol("king_cane01")
+    end
+    if inst.gem then
+        inst.components.inventoryitem:ChangeImageName("king_cane_" .. inst.gem)
+    else
+        inst.components.inventoryitem:ChangeImageName("king_cane")
+    end
+end
+
+queen_torch_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "queen_torch") end
+queen_torch_clear_fn = function(inst) basic_clear_fn(inst, "queen_torch") end
 
 --------------------------------------------------------------------------
 --[[ rabbithouse skin functions ]]
@@ -3047,7 +3103,7 @@ end
 --------------------------------------------------------------------------
 --[[ Cane skin functions ]]
 --------------------------------------------------------------------------
-local TRAIL_FLAGS = { "shadowtrail" }
+local TRAIL_FLAGS = { "shadowtrail", "canetrail" }
 local function cane_do_trail(inst)
     local owner = inst.components.inventoryitem:GetGrandOwner() or inst
     if not owner.entity:IsVisible() then
@@ -3065,18 +3121,42 @@ local function cane_do_trail(inst)
     local map = TheWorld.Map
     local offset = FindValidPositionByFan(
         math.random() * TWOPI,
-        (mounted and 1 or .5) + math.random() * .5,
+        (mounted and 1 or .5) + math.random() * .5, -- NOTES(JBK): Keep in sync with cane vfx radius checks. [CSTRC]
         4,
         function(offset)
             local pt = Vector3(x + offset.x, 0, z + offset.z)
             return map:IsPassableAtPoint(pt:Get())
                 and not map:IsPointNearHole(pt)
-                and #TheSim:FindEntities(pt.x, 0, pt.z, .7, TRAIL_FLAGS) <= 0
+                and #TheSim:FindEntities(pt.x, 0, pt.z, .7, nil, nil, TRAIL_FLAGS) <= 0
         end
     )
 
     if offset ~= nil then
-        SpawnPrefab(inst.trail_fx).Transform:SetPosition(x + offset.x, 0, z + offset.z)
+        local fx = SpawnPrefab(inst.trail_fx)
+        fx.Transform:SetPosition(x + offset.x, 0, z + offset.z)
+        if fx.SetOwnerAffinity then
+            local skilltreeowner = owner
+            if skilltreeowner.prefab == "wx78_backupbody_inventory" then
+                -- Hack to move the reference to the backupbody.
+                local parent = skilltreeowner.entity:GetParent()
+                if parent and parent.prefab == "wx78_backupbody" then
+                    skilltreeowner = parent
+                end
+            end
+            if skilltreeowner.wx78_classified then
+                skilltreeowner = skilltreeowner.wx78_classified:GetOwningPlayer() or skilltreeowner
+            end
+            if skilltreeowner.components.skilltreeupdater then
+                if skilltreeowner.components.skilltreeupdater:HasSkillTag("lunar_favor") then
+                    fx:SetOwnerAffinity("LUNAR")
+                elseif skilltreeowner.components.skilltreeupdater:HasSkillTag("shadow_favor") then
+                    fx:SetOwnerAffinity("SHADOW")
+                end
+            end
+        end
+        if fx.TrackOwnerAndCane then
+            fx:TrackOwnerAndCane(owner, inst)
+        end
     end
 end
 

@@ -62,8 +62,8 @@ local function onequip_blue(inst, owner)
         owner.AnimState:OverrideSymbol("swap_body", "torso_amulets", "blueamulet")
     end
 
-    inst.freezefn = function(attacked, data)
-        if data and data.attacker and data.attacker.components.freezable then
+	inst.freezefn = function(owner, data)
+		if data and data.attacker and data.attacker.components.freezable and ShouldProcOnAttackedOrBlocked(inst, owner, data) then
             data.attacker.components.freezable:AddColdness(0.67)
             data.attacker.components.freezable:SpawnShatterFX()
             inst.components.fueled:DoDelta(-0.03 * inst.components.fueled.maxfuel)
@@ -394,7 +394,8 @@ local function commonfn(anim, tag, should_sink, can_refuel)
 	end
 
     if not should_sink then
-        MakeInventoryFloatable(inst, "med", nil, 0.6)
+        local swap_data = {bank = "amulets", anim = anim}
+        MakeInventoryFloatable(inst, "med", nil, 0.6, nil, nil, swap_data)
     end
 
     inst.entity:SetPristine()

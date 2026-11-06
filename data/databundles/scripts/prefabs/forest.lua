@@ -568,8 +568,9 @@ local prefabs =
 
     "hot_splash",
 
-    -- TODO #FIXME
-    "carnivalgame_golfgame",
+    -- Halloween 2026
+    -- leafpilemanager
+    "leafpile",
 }
 
 local FISH_DATA = require("prefabs/oceanfishdef")
@@ -685,6 +686,7 @@ local function master_postinit(inst)
         inst:AddComponent("wintersurprisespawner")
     end
     inst:AddComponent("snowballmanager")
+    inst:AddComponent("leafpilemanager")
 
     inst:AddComponent("feasts")
 

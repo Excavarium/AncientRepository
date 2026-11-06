@@ -1,7 +1,7 @@
 {
   "original_name": "tier0_s64.dll",
   "relative_hint": "tier0_s64.dll",
-  "sha256": "681c23710fd26784584a40ff5994ffced11b0a621670291b9e589d5efba84c21",
-  "size": 428184,
+  "sha256": "30f7bb8d9b86006852493c26124ba253bd9e7ffd40a8b3c7254f86a9032c3be3",
+  "size": 900760,
   "note": "Binary stripped from AncientRepository; hash retained for change detection."
 }

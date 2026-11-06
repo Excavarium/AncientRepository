@@ -1,7 +1,7 @@
 {
   "original_name": "dontstarve_dedicated_server_nullrenderer_x64.exe",
   "relative_hint": "dontstarve_dedicated_server_nullrenderer_x64.exe",
-  "sha256": "0d2ef88250122e90815aa72e285eba4cfd38897db06dcc927ca9c22c6399808e",
-  "size": 7114240,
+  "sha256": "0d99172c3a4428ae9edb5813e33c65d99557db1ad5b5f1f9151137aa1412b0c2",
+  "size": 6535168,
   "note": "Binary stripped from AncientRepository; hash retained for change detection."
 }

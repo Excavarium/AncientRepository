@@ -109,6 +109,8 @@ function MapScreen:OnBecomeInactive()
     self:RemoveDecorations()
     self.decorationdata.lmb = nil
     self.decorationdata.rmb = nil
+
+    TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/map_close")
 end
 
 function MapScreen:OnBecomeActive()
@@ -133,6 +135,8 @@ function MapScreen:OnBecomeActive()
         local scale = TheFrontEnd:GetHUDScale()
         self.hover:SetScale(scale)
     end
+
+    TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/map_open")
 
     self.zoomsensitivity = Profile:GetMiniMapZoomSensitivity()
     --V2C: Don't set pause in multiplayer, all it does is change the
@@ -892,11 +896,11 @@ function MapScreen:ProcessRMBDecorations_BLINK_MAP(rmb, fresh)
 end
 
 function MapScreen:ProcessRMBDecorations_TOSS_MAP(rmb, fresh)
-    local equippedhands = self.owner.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+    local equippedhands = rmb.invobject
     if equippedhands == nil or not equippedhands:IsValid() then
         return
     end
-    
+
     local does_custom = equippedhands.InitMapDecorations ~= nil and equippedhands.CalculateMapDecorations ~= nil
     if does_custom then
         if fresh then

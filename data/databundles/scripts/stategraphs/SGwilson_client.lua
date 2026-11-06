@@ -17,6 +17,18 @@ local function GetIceStaffProjectileSound(inst, equip)
     return "dontstarve/wilson/attack_icestaff"
 end
 
+local function GetKingStaffProjectileSound(inst, equip) -- shadowdominance tag means the staff is corrupted
+    if equip:HasTag("icestaff") then
+        return equip:HasTag("shadowdominance") and "dontstarve/wilson/attack_icestaff_corrupted"
+            or "dontstarve/wilson/attack_icestaff_kingcane"
+    elseif equip:HasTag("firestaff") then
+        return equip:HasTag("shadowdominance") and "dontstarve/wilson/attack_firestaff_corrupted"
+            or "dontstarve/wilson/attack_firestaff_kingcane"
+    end
+
+    return "dontstarve/wilson/attack_weapon"
+end
+
 local function DoEquipmentFoleySounds(inst)
     local inventory = inst.replica.inventory
     if inventory ~= nil then
@@ -149,6 +161,7 @@ end
 
 local function ConfigureRunState(inst)
 	local rider = inst.replica.rider
+    local inventory = inst.replica.inventory
 	local mount = rider and rider:GetMount() or nil
 	if mount then
         inst.sg.statemem.riding = true
@@ -166,7 +179,7 @@ local function ConfigureRunState(inst)
 				inst.woby_commands_classified:ShouldSprint() and
 				inst.components.skilltreeupdater:IsActivated("walter_woby_sprint")
 		end
-    elseif inst.replica.inventory:IsHeavyLifting() then
+    elseif inventory:IsHeavyLifting() then
         inst.sg.statemem.heavy = true
 		inst.sg.statemem.heavy_fast = inst:HasTag("mightiness_mighty")
 	elseif IsChannelCasting(inst) then
@@ -197,12 +210,13 @@ local function ConfigureRunState(inst)
 		inst.sg.statemem.teetering = true
     elseif inst:HasTag("groggy") then
         inst.sg.statemem.groggy = true
-    elseif inst:IsCarefulWalking() then
+    elseif inst:IsCarefulWalking() and not inventory:EquipHasTag("flyingbroom") then
         inst.sg.statemem.careful = true
     else
         inst.sg.statemem.normal = true
         inst.sg.statemem.normalwonkey = inst:HasTag("wonkey") or nil
-        inst.sg.statemem.normalgalloping = inst.replica.inventory:EquipHasTag("gallopstick") or nil
+        inst.sg.statemem.normalgalloping = inventory:EquipHasTag("gallopstick") or nil
+        inst.sg.statemem.normalflyingbroom = inventory:EquipHasTag("flyingbroom") or nil
 
 		if not inst.sg.statemem.normalgalloping then
 			inst.sg.mem.gallop_lastrotation = nil
@@ -242,6 +256,10 @@ local function GetRockingChairStateAnim(inst, chair)
     end
 
     return "rocking"
+end
+
+local function ConfigureWitchBroomFlying(inst, enable)
+    inst.components.locomotor:EnableGroundSpeedMultiplier(not enable)
 end
 
 local actionhandlers =
@@ -1004,6 +1022,12 @@ local actionhandlers =
 		inst.sg.statemem.charging = true
 		return "club_putt_pre"
 	end),
+
+    -- Rifts 8
+    ActionHandler(ACTIONS.CORRUPTNIGHTMARE, "castspell"),
+
+    -- Halloween 2026
+    ActionHandler(ACTIONS.SWEEP, "doswipeaction"),
 }
 
 local events =
@@ -1187,7 +1211,10 @@ local states =
 			--goose footsteps should always be light
 			inst.sg.mem.footsteps = (inst.sg.statemem.goose or inst.sg.statemem.goosegroggy) and 4 or 0
 
-            if inst.sg.statemem.normalgalloping then
+            if inst.sg.statemem.normalflyingbroom then
+                inst.sg:GoToState("run_flyingbroom_start")
+                return
+            elseif inst.sg.statemem.normalgalloping then
                 if inst.components.locomotor:GetTimeMoving() >= TUNING.YOTH_KNIGHTSTICK_TIME_TO_GALLOP then
 					inst.sg:GoToState("run_gallop", { --resuming after brief stop from changing directions, or resuming prediction after running into obstacle
 						lastrotation = inst.sg.mem.gallop_lastrotation,
@@ -1322,7 +1349,10 @@ local states =
         end,
 
         onupdate = function(inst)
-            if inst.sg.statemem.normalgalloping then
+            if inst.sg.statemem.normalflyingbroom then
+                inst.sg:GoToState("run_flyingbroom_start")
+                return
+            elseif inst.sg.statemem.normalgalloping then
                 if inst.components.locomotor:GetTimeMoving() >= TUNING.YOTH_KNIGHTSTICK_TIME_TO_GALLOP then
 					inst.sg:GoToState("run_gallop_start")
 					return
@@ -1625,11 +1655,17 @@ local states =
                 inst.Transform:SetPredictedSixFaced()
             elseif anim == "run" and inst.sg.lasttags and inst.sg.lasttags["galloping"] then
                 anim = "run_gallop"
+            elseif anim == "run" and inst.sg.lasttags and inst.sg.lasttags["flyingonbroom"] then
+                anim = "run_witchbroom"
             end
 			inst.AnimState:PlayAnimation(anim.."_pst")
 
             if inst.sg.statemem.moose or inst.sg.statemem.moosegroggy then
                 PlayMooseFootstep(inst, .6, true)
+                DoFoleySounds(inst)
+            elseif inst.sg.statemem.normalgalloping then
+                inst.SoundEmitter:PlaySound("dontstarve/movement/run_horseshoes", nil, nil, true)
+                PlayFootstep(inst, 0.5, true)
                 DoFoleySounds(inst)
             end
         end,
@@ -5009,6 +5045,7 @@ local states =
                         inst.sg.statemem.projectiledelay = 8 * FRAMES - equip.projectiledelay
                         if inst.sg.statemem.projectiledelay > FRAMES then
                             inst.sg.statemem.projectilesound =
+                                (equip.prefab == "king_cane" and GetKingStaffProjectileSound(inst, equip)) or
                                 (equip:HasTag("icestaff") and GetIceStaffProjectileSound(inst, equip)) or
                                 (equip:HasTag("firestaff") and "dontstarve/wilson/attack_firestaff") or
                                 (equip:HasTag("firepen") and "wickerbottom_rework/firepen/launch") or
@@ -5019,6 +5056,7 @@ local states =
                     end
                     if inst.sg.statemem.projectilesound == nil then
                         inst.SoundEmitter:PlaySound(
+                            (equip.prefab == "king_cane" and GetKingStaffProjectileSound(inst, equip)) or
                             (equip:HasTag("icestaff") and GetIceStaffProjectileSound(inst, equip)) or
                             (equip:HasTag("firestaff") and "dontstarve/wilson/attack_firestaff") or
                             (equip:HasTag("firepen") and "wickerbottom_rework/firepen/launch") or
@@ -5106,6 +5144,7 @@ local states =
                     inst.sg.statemem.projectiledelay = 8 * FRAMES - equip.projectiledelay
                     if inst.sg.statemem.projectiledelay > FRAMES then
                         inst.sg.statemem.projectilesound =
+                            (equip.prefab == "king_cane" and GetKingStaffProjectileSound(inst, equip)) or
                             (equip:HasTag("icestaff") and GetIceStaffProjectileSound(inst, equip)) or
                             (equip:HasTag("firestaff") and "dontstarve/wilson/attack_firestaff") or
                             (equip:HasTag("firepen") and "wickerbottom_rework/firepen/launch") or
@@ -5116,6 +5155,7 @@ local states =
                 end
                 if inst.sg.statemem.projectilesound == nil then
                     inst.SoundEmitter:PlaySound(
+                        (equip.prefab == "king_cane" and GetKingStaffProjectileSound(inst, equip)) or
                         (equip:HasTag("icestaff") and GetIceStaffProjectileSound(inst, equip)) or
                         (equip:HasTag("shadow") and "dontstarve/wilson/attack_nightsword") or
                         (equip:HasTag("firestaff") and "dontstarve/wilson/attack_firestaff") or
@@ -8669,6 +8709,117 @@ local states =
 			inst.sg:GoToState("idle", true)
 		end,
 	},
+
+    -- Halloween 2026
+
+    State{
+        name = "run_flyingbroom_start",
+        tags = { "moving", "running", "canrotate", "flyingonbroom" },
+
+        onenter = function(inst)
+            ConfigureRunState(inst)
+            if not inst.sg.statemem.normalflyingbroom then
+                inst.sg:GoToState("run")
+                return
+            end
+            inst.components.locomotor:RunForward()
+            inst.AnimState:PlayAnimation("run_witchbroom_pre")
+            inst.SoundEmitter:PlaySound("hallowednights2025/broom/broom_takeoff", nil, nil, true)
+        end,
+
+        events =
+        {
+            EventHandler("gogglevision", function(inst, data)
+				if not data.enabled and inst:IsInAnyStormOrCloud() then
+                    inst.sg:GoToState("run")
+                end
+            end),
+			EventHandler("stormlevel", function(inst, data)
+                if data.level >= TUNING.SANDSTORM_FULL_LEVEL and not inst.components.playervision:HasGoggleVision() then
+                    inst.sg:GoToState("run")
+                end
+            end),
+			EventHandler("miasmalevel", function(inst, data)
+				if data.level >= 1 and not inst.components.playervision:HasGoggleVision() then
+					inst.sg:GoToState("run")
+				end
+			end),
+            EventHandler("carefulwalking", function(inst, data)
+                if data.careful then
+                    inst.sg:GoToState("run")
+                end
+            end),
+            EventHandler("animover", function(inst)
+                inst.sg:GoToState("run_flyingbroom")
+            end),
+        },
+    },
+
+    State{
+        name = "run_flyingbroom",
+		tags = { "moving", "running", "canrotate", "flyingonbroom", },
+
+        onenter = function(inst, data)
+            ConfigureRunState(inst)
+            if not inst.sg.statemem.normalflyingbroom then
+                inst.sg:GoToState("run")
+                return
+            end
+
+            if not inst.AnimState:IsCurrentAnimation("run_witchbroom_loop") then
+                inst.AnimState:PlayAnimation("run_witchbroom_loop", true)
+            end
+
+            ConfigureWitchBroomFlying(inst, true)
+			inst.components.locomotor:RunForward()
+            inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
+        end,
+
+        timeline =
+        {
+            FrameEvent(6, DoFoleySounds),
+            FrameEvent(14, DoFoleySounds),
+        },
+
+        onupdate = function(inst)
+            inst.components.locomotor:RunForward()
+        end,
+
+        events =
+        {
+            EventHandler("gogglevision", function(inst, data)
+				if not data.enabled and inst:IsInAnyStormOrCloud() then
+                    inst.sg:GoToState("run")
+                end
+            end),
+			EventHandler("stormlevel", function(inst, data)
+                if data.level >= TUNING.SANDSTORM_FULL_LEVEL and not inst.components.playervision:HasGoggleVision() then
+                    inst.sg:GoToState("run")
+                end
+            end),
+			EventHandler("miasmalevel", function(inst, data)
+				if data.level >= 1 and not inst.components.playervision:HasGoggleVision() then
+					inst.sg:GoToState("run")
+				end
+			end),
+            EventHandler("carefulwalking", function(inst, data)
+                if data.careful then
+                    inst.sg:GoToState("run")
+                end
+            end),
+        },
+
+        ontimeout = function(inst)
+            inst.sg.statemem.flyingbroom = true
+			inst.sg:GoToState("run_flyingbroom")
+        end,
+
+        onexit = function(inst)
+            if not inst.sg.statemem.flyingbroom then
+                ConfigureWitchBroomFlying(inst, false)
+            end
+        end,
+    },
 }
 
 local hop_timelines =

@@ -206,6 +206,7 @@ return{
             NOTAMONKEY = "I'm sorry... I don't know what you're trying to say...",
             QUEENBUSY = "She doesn't have time for someone like me.",
             CARNIVALGAME_GOLFGAME_NOTREADY = "It's incomplete. Like me.",
+            KINGSTAFF_COOLDOWN = "It is stuck.", -- can't give it a new gem because it's on cooldown
         },
         GIVE_TACKLESKETCH =
 		{
@@ -1258,6 +1259,17 @@ return{
     ANNOUNCE_HEALINGSALVE_FUMAROLEBUFF_DONE = "The flames may consume me once again.",--fire immunity expired
     ANNOUNCE_SECURITY_PULSE_FOLLOWING = "Seems we have a new friend, Abigail.", -- Security spark attached to us due to us holding Waymark Compass.
 
+    -- Rifts 8
+
+    -- after the final fight when Charlie goes MIA and isn't the night monster anymore
+	ANNOUNCE_GRUE_NOCHARLIE = "Demon! Show yourself!",
+	ANNOUNCE_GRUE_NOCHARLIE_ATTACK = "I am attacked!",
+--fallback to speech_wilson.lua 	ANNOUNCE_GRUE_NOCHARLIE_MISSED = "only_used_by_winona", --winona specific
+
+	ANNOUNCE_STOMP_SHROUDEN = "A fitting end for you.",
+
+    ANNOUNCE_DREADSTONE_SPIKE_EXPLODING = "What do they have against the enlightened?", -- exploding because of enlightenment.
+
 	BATTLECRY =
 	{
 		GENERIC = "Death will find you!",
@@ -1707,7 +1719,12 @@ return{
 		CAVE_BANANA = "The peels look dangerous.",
 		CAVE_BANANA_COOKED = "Warmed banana mush is so much better.",
 		CAVE_BANANA_TREE = "Poor plant, locked away from the sun.",
-		ROCKY = "What terrible sights they have seen.",
+        ROCKY =
+        {
+            GENERIC = "What terrible sights they have seen.",
+            BOULDER = "Even that is not permanent.", -- in boulder state, it looks like a normal boulder
+            ACID = "Sometimes I wish I could shrink into nothing.", -- in acid form
+        },
 
 		COMPASS =
 		{
@@ -1724,7 +1741,11 @@ return{
 
         HOUNDSTOOTH = "Pulled out by the root.",
         ARMORSNURTLESHELL = "A suit to hide from one's problems.",
-        BAT = "A creature of the night.",
+        BAT =
+        {
+            GENERIC = "A creature of the night.",
+            ACID = "It hungers.", -- in acid form
+        },
         BATBAT = "An enchanted weapon. How exciting!",
         BATWING = "If only I could fly away.",
         BATWING_COOKED = "They once held such great potential.",
@@ -2195,6 +2216,11 @@ return{
         CHESSPIECE_WAGBOSS_LUNAR = "This doesn't capture its pain.",
         CHESSPIECE_YOTH = "Not quite the fairy tale version.",
         CHESSPIECE_VAULT_PILLAR_GUARD = "There's no life in this small sentry.",
+        CHESSPIECE_BATBOSS_SHADOW = "It thirsted for life.",
+        CHESSPIECE_ROCKYBOSS_SHADOW = "It harbored a dark rage.",
+        CHESSPIECE_WORMBOSS_SHADOW = "It was cursed with an endless hunger.",
+        CHESSPIECE_CHARLIE_BOSS = "I feel sorry for her.",
+        CHESSPIECE_SHROUDEN = "That was the worst.",
 
         CHESSJUNK1 = "Cold, dead artificial life.",
         CHESSJUNK2 = "Cold, dead artificial life.",
@@ -3513,6 +3539,7 @@ return{
 			CHARGING = "Take us far from here.",
 			DESTABILIZING = "Oh well. I hope it's a quick death.",
 			COOLDOWN = "We can't do that again for awhile.",
+            RITUAL_SUMMONING = "Have you finally come for me?", -- ritual is actively summoning, shrouden has appeared through the gate in the form of the eye, its looks between players, and charlie.
         },
         ATRIUM_KEY = "I think I know where it goes...",
 		LIFEINJECTOR = "We were not meant to cheat death.",
@@ -4533,6 +4560,8 @@ return{
 			LORE1 = "He gave in.",
 			LORE2 = "So much death.",
 			LORE3 = "We aren't meant to leave this place.",
+            --
+            LORE1_STALKER = "Don't feel bad. You did your best.", -- when the stalker/king is with you, different inspect for the king statue!
 		},
 
         ARCHIVE_RESONATOR = {
@@ -5368,7 +5397,12 @@ return{
 		SHADOWTHRALL_WINGS = "There is no face beneath that hood.",
 		SHADOWTHRALL_MOUTH = "What are you? The Grin Reaper?",
 
-        CHARLIE_NPC = "Are you the true face of the darkness?",
+        CHARLIE_NPC =
+        {
+            GENERIC = "Are you the true face of the darkness?", -- scene 1, first appearance of charlie to repair the gateway
+            SCENE2 = "Will this help bring Abigail back?", -- scene 2, charlie appears again to socket the key and place the ritual down
+            SCENE3 = "Will this help bring Abigail back?", -- scene 3, the gateway has both keys, and the sacrifice pieces are set up in the ritual, she appears to tell you to activate it
+        },
         CHARLIE_HAND = "Do I dare approach?",
 
         NITRE_FORMATION = "It thrives while the rest of us burn.",
@@ -6275,6 +6309,85 @@ return{
 
         CARNIVALGAME_GOLFPROP_FAN = "I love the wind, but not while I'm putting.", -- fan that blows wind and pushes in a direction
 
+        -- Rifts 8
+
+        ROCKY_BOSS =
+        {
+            GENERIC = "Can it cut the fabric that separates us, Abi?",
+            BOULDER = "Something off about that boulder.", -- in boulder form
+            ACID = "I wonder if it's in pain.",
+        },
+		ROCKY_BOSS_SHADOW = "Do you think that claw would hurt, Abi?",
+        BAT_BOSS =
+        {
+            GENERIC = "What are you waiting for?",
+            ACID = "Nothing but hunger behind those glowing eyes.",
+        },
+		BAT_BOSS_SHADOW = "Truly a creature of the night.",
+
+        BATBOSSCAVE =
+        {
+            GENERIC = "I sense a hungry presence inside.", -- boss bat is inside,
+            VACANT = "I think it's empty.", -- boss bat is not inside anymore
+        },
+
+        WORM_BOSS_SHADOW = "It's covered in shadow.",
+
+        ARMOR_ROCKY = "No armor strong enough to protect my heart.",
+        BAT_BOSSCORPSEHAT = "I sure hope it's dead.",
+
+        ATRIUM_RITUAL_ORGAN_ROCKY =
+        {
+            GENERIC = "So deadly.",
+            IN_RITUAL = "Light as a feather...", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+        ATRIUM_RITUAL_ORGAN_BAT =
+        {
+            GENERIC = "I can still hear it.",
+            IN_RITUAL = "Light as a feather...", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+        ATRIUM_RITUAL_ORGAN_WORM =
+        {
+            GENERIC = "Smells like death.",
+            IN_RITUAL = "Light as a feather...", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+
+		CHARLIE_BOSS = "She's lost herself.",
+		SHROUDEN =
+		{
+			GENERIC = "The abyss gazes back.... and walks among us.",
+			PUDDLE = "I agree, Abi. I should crush that cursed eye.",
+		},
+
+        CHARLIEARENA_SPIKE = "It pierces through the very ground.",
+
+        KING_CANE =
+        {
+            GENERIC = "It belonged to someone who lost everything.", -- has a gem slotted in
+            EMPTY = "It's lifeless without a gem.", -- can socket a gem inside (can be heavy on hint)
+        },
+        QUEEN_TORCH = "I see the flame, but I feel no warmth.",
+        
+        CHARLIEARENA_TELEPORTER = "I'd better take everything before I jump.",
+
+        MASK_CHARLIE_BOSSHAT = "And that's how she'll be remembered.",
+
+        -- Halloween 2026
+		FRANKEN_PIG = "Who is the true monster, you or your creator?",
+		MUMMY_MERM = "The undead are cursed to wander for all eternity...",
+		VAMPIRE_BUNNY = "I'm afraid you would find my blood quite cold and bitter.",
+        LEAFPILE = "We are all just leaves on a tree waiting to fall.",
+        PUMPKIN_BOMB = "Better to explode than simply rot away, I suppose.", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
+        WITCHBROOM =
+        {
+            GENERIC = "If only grief could be swept away.", -- normal version
+            LIVING = "It seems even a broom can be haunted."
+        },
+
+		HALLOWEEN_ORNAMENT_7 = "I like watching it dangle helplessly.", -- frankenswine
+		HALLOWEEN_ORNAMENT_8 = "Hang it from the highest tree.", -- mummy merm
+		HALLOWEEN_ORNAMENT_9 = "I will find a barren branch to leave it on.", -- vampire bunnyman
+		HALLOWEEN_ORNAMENT_10 = "A grim souvenir from the dark tunnels below.", -- hound batilisk
     },
 
     DESCRIBE_GENERIC = "Sigh... I don't know.",
@@ -6299,6 +6412,4 @@ return{
     },
 
     WENDY_SKILLTREE_EASTEREGG = "Is that you, Abby?",
-
-
 }
