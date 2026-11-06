@@ -52,6 +52,8 @@ local function SpawnBreathFX(inst, angle, dist, targets)
 	if fx == nil then
 		fx = SpawnPrefab("warg_mutated_breath_fx")
 		fx:SetFXOwner(inst)
+    elseif fx:IsInLimbo() then
+        fx:ReturnToScene()
 	end
 
 	local scale = (0.85 + math.random() * 0.15)
@@ -99,12 +101,26 @@ local function FlyAwayToSky(inst)
     end
 end
 
+local function ConfigureFlying(inst, enable)
+	if enable then
+        RaiseFlyingCreature(inst)
+		inst:AddTag("notraptrigger")
+		inst.components.locomotor:EnableGroundSpeedMultiplier(false)
+		-- inst:PushEvent("ms_escape_rooted") -- stays rooted
+	else
+		LandFlyingCreature(inst)
+		inst:RemoveTag("notraptrigger")
+		inst.components.locomotor:EnableGroundSpeedMultiplier(true)
+	end
+end
+
 local events =
 {
 	CommonHandlers.OnSleepEx(),
 	CommonHandlers.OnWakeEx(),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
     CommonHandlers.OnDeath(),
     CommonHandlers.OnSink(),
     CommonHandlers.OnFallInVoid(),
@@ -144,8 +160,11 @@ local events =
     end),
 
 	EventHandler("onignite", function(inst)
-		if inst.components.health and not (inst.components.health:IsDead() or inst.sg:HasAnyStateTag("electrocute", "stunned"))
-            and ShouldDistress(inst) then
+		if inst.components.health and not inst.components.health:IsDead() and
+			not inst.sg:HasAnyStateTag("electrocute", "stunned") and
+			(not inst.sg:HasStateTag("knockback") or inst.sg:HasStateTag("caninterrupt")) and
+			ShouldDistress(inst)
+		then
 			inst.sg:GoToState("distress_pre")
 		end
 	end),
@@ -304,7 +323,7 @@ local states =
 
     State{
         name = "glide",
-		tags = { "idle", "flight", "busy", "noelectrocute", "nosleep" },
+		tags = { "idle", "flight", "busy", "noelectrocute", "noknockback", "nosleep" },
         onenter= function(inst)
             inst.AnimState:PlayAnimation("glide", true)
 			inst.DynamicShadow:Enable(false)
@@ -409,7 +428,7 @@ local states =
 
     State{
         name = "flyaway",
-		tags = { "flight", "busy", "canrotate", "noelectrocute", "nosleep" },
+		tags = { "flight", "busy", "canrotate", "noelectrocute", "noknockback", "nosleep" },
         onenter = function(inst)
 			if IsStuck(inst) then
 				inst.sg:GoToState("distress_pre")
@@ -565,7 +584,7 @@ local states =
             inst.AnimState:PlayAnimation("atk_flame_pre")
             inst:SwitchToEightFaced()
 
-            RaiseFlyingCreature(inst)
+            ConfigureFlying(inst, true)
             ChangeToFlyingCharacterPhysics(inst, 15, .25)
 
             if target and target:IsValid() then
@@ -608,6 +627,8 @@ local states =
 
         onexit = function(inst)
 			if not inst.sg.statemem.attacking then
+                inst:SwitchToFourFaced()
+                ConfigureFlying(inst, false)
                 LandFlyingCreature(inst)
                 ChangeToCharacterPhysics(inst, 15, .25)
 				inst.components.combat:SetDefaultDamage(TUNING.MUTATEDBUZZARD_DAMAGE)
@@ -618,7 +639,7 @@ local states =
 
     State{
 		name = "flamethrower_loop",
-		tags = { "attack", "busy", "flight", "noelectrocute", "flamethrowering" }, -- To dodge electric fence.
+		tags = { "attack", "busy", "noattack", "noelectrocute", "noknockback", "flamethrowering" }, -- To dodge electric fence.
 
 		onenter = function(inst, targets)
             inst.components.locomotor:Stop()
@@ -683,6 +704,7 @@ local states =
 		onexit = function(inst)
 			if not inst.sg.statemem.attacking then
 				inst:SwitchToFourFaced()
+                ConfigureFlying(inst, false)
                 ChangeToCharacterPhysics(inst, 15, .25)
 				inst.components.combat:SetDefaultDamage(TUNING.MUTATEDBUZZARD_DAMAGE)
 				inst.SoundEmitter:KillSound("loop")
@@ -702,6 +724,7 @@ local states =
             inst.components.locomotor:Stop()
             inst.AnimState:PlayAnimation("atk_flame_pst")
 
+            ConfigureFlying(inst, false)
             ChangeToCharacterPhysics(inst, 15, .25)
 
             inst:SwitchToEightFaced()
@@ -842,8 +865,7 @@ local states =
 
     State{
         name = "fall",
-        -- Well, not really 'flying', more so falling with style!
-		tags = { "flight", "busy", "noelectrocute", "nosleep" },
+		tags = { "noattack", "busy", "noelectrocute", "noknockback", "nosleep" },
         onenter = function(inst)
             inst.Physics:Stop()
 			inst.DynamicShadow:Enable(false)
@@ -1048,7 +1070,7 @@ local states =
 
     State{
         name = "corpse_fall",
-		tags = { "corpse", "busy", "noelectrocute" },
+		tags = { "corpse", "busy", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
             inst.Physics:Stop()
@@ -1156,6 +1178,35 @@ nil, --timeline
 		end
 	end,
 })
+
+local function _knockback_onanimover(inst)
+	if inst.AnimState:AnimDone() then
+		if inst.components.burnable and inst.components.burnable:IsBurning() and ShouldDistress(inst) then
+			inst.sg:GoToState("distress_pre")
+		else
+			inst.sg:GoToState("idle")
+		end
+	end
+end
+
+CommonStates.AddKnockbackStates(states,
+{ --timelines
+	knockback =
+	{
+		FrameEvent(32, function(inst)
+			if inst.components.burnable and inst.components.burnable:IsBurning() and ShouldDistress(inst) then
+				inst.sg:GoToState("distress_pre")
+			end
+		end),
+	},
+},
+nil, --anims
+{ --fns
+	knockback_onanimover = _knockback_onanimover,
+	knockbacklanded_onanimover =_knockback_onanimover,
+})
+
+_knockback_onanimover = nil
 
 CommonStates.AddLunarRiftMutationStates(states, nil, nil,
 { -- fns

@@ -456,6 +456,7 @@ local function SaveCorpseData(inst, corpse)
     end
 end
 
+local DIET = { FOODTYPE.MEAT, FOODTYPE.HORRIBLE }
 local function fncommon(bank, build, morphlist, custombrain, tag, data)
 	data = data or {}
 
@@ -484,11 +485,14 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
 
         if tag == "clay" then
 			inst:AddTag("electricdamageimmune")
+			inst:AddTag("heavybody") --for knockback
 
             inst._eyeflames = net_bool(inst.GUID, "clayhound._eyeflames", "eyeflamesdirty")
             inst:ListenForEvent("eyeflamesdirty", OnEyeFlamesDirty)
         elseif tag == "lunar_aligned" then
             inst:AddTag("soulless") -- no wortox souls
+        elseif tag == "hedge" then
+            inst:AddTag("plantcreature")
         end
     end
 
@@ -571,8 +575,7 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
         inst.components.hauntable:SetHauntValue(TUNING.HAUNT_TINY)
     else
         inst:AddComponent("eater")
-        inst.components.eater:SetDiet({ FOODTYPE.MEAT }, { FOODTYPE.MEAT })
-        inst.components.eater:SetCanEatHorrible()
+        inst.components.eater:SetDiet(DIET, DIET)
         inst.components.eater:SetStrongStomach(true) -- can eat monster meat!
 
         inst:AddComponent("sleeper")

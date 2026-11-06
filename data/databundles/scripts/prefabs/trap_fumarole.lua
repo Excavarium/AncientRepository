@@ -446,6 +446,7 @@ local function SetTrap(inst)
         inst.components.inventoryitem:SetMaxTemperature(TUNING.TRAP_FUMAROLE_MAXTEMP)
         inst:AddTag("mineactive")
         inst:AddTag("canpourwateron")
+        inst.Physics:SetActive(false)
         if not inst:IsInLimbo() then
             inst.MiniMapEntity:SetEnabled(true)
         end
@@ -466,6 +467,7 @@ end
 local function SetItem(inst)
     inst.MiniMapEntity:SetEnabled(false) -- has to always run because RemoveFromScene/ReturnToScene call SetEnabled
     if inst.settrap then
+        inst.Physics:SetActive(true)
         inst.components.inventoryitem:SetMaxTemperature(TUNING.TRAP_FUMAROLE_MAXTEMP_HELD)
         ClearPlayIdleTask(inst)
         inst:RemoveTag("mineactive")
@@ -609,6 +611,7 @@ local function fn()
     inst.components.inventoryitem:SetTemperature(TUNING.TRAP_FUMAROLE_MAXTEMP_HELD)
     inst.components.inventoryitem:SetTemperatureModifier("fumaroletool_mod", TUNING.TRAP_FUMAROLE_TEMP_MODIFIER)
     inst.components.inventoryitem:SetSaveMinAndMaxTemperature(true)
+    inst.components.inventoryitemtemperature.inherentinsulation = TUNING.INSULATION_LARGE
 
     inst:AddComponent("stackable")
     inst.components.stackable.maxsize = TUNING.STACK_SIZE_LARGEITEM
@@ -623,6 +626,7 @@ local function fn()
 	inst:ListenForEvent("onputininventory", SetItem)
 	inst:ListenForEvent("onpickup", OnPickup)
 	inst:ListenForEvent("ondropped", SetItem)
+	inst:ListenForEvent("teleported", SetItem)
     inst:ListenForEvent("temperaturedelta", OnTemperatureDelta)
 	inst:ListenForEvent("floater_startfloating", SetItem)
 

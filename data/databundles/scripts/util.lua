@@ -321,14 +321,16 @@ end
 
 -- Appends array-style tables to the first one passed in
 function ConcatArrays(ret, ...)
-	for i,array in ipairs({...}) do
-		for j,val in ipairs(array) do
-			table.insert(ret, val)
+	for i = 1, select('#', ...) do
+		local array = select(i, ...)
+		if array then
+			for _, val in ipairs(array) do
+				table.insert(ret, val)
+			end
 		end
 	end
 	return ret
 end
-
 
 -- concatenate two or more array-style tables
 function JoinArrays(...)
@@ -1962,6 +1964,7 @@ end
 
 ------------------------------
 -- PRNG implementation based off of Sergei Mikhailovich Prigarin's demonstration program documentation for the "2^40-5^17" multiplicative generator from June, 1999.
+-- #PSEUDO RANDOM PRND PRAND (for searching XD)
 PRNG_Uniform = Class(function(self, seed)
     self.A1 = 727595 -- 5^17 = D20 * A1 + A2
     self.A2 = 798405
