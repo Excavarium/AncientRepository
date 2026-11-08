@@ -1,0 +1,472 @@
+{
+ "leaves": {
+  "client-public-linux": {
+   "app": 322330,
+   "app_name": "Client",
+   "branch": "public",
+   "main_depot": 322332,
+   "os": "linux",
+   "ref": "client-public-linux",
+   "steam": {
+    "api": {
+     "322332": "38311723838500344"
+    },
+    "buildid": "26474873",
+    "manifests": {
+     "322332": "38311723838500344"
+    }
+   },
+   "title": "Client / public / linux",
+   "versions": [
+    {
+     "added": 19463,
+     "buildid": "24080983",
+     "bytes": 4550197482,
+     "commit": "e3bc6489be5fc0f0972d2aadacce056581b36368",
+     "files": 19463,
+     "key": "24080983",
+     "legacy": true,
+     "manifests": {},
+     "modified": 0,
+     "note": "Imported from the original folder-layout mirror (2026-08-06).",
+     "released": "2026-08-06T05:36:41Z",
+     "removed": 0,
+     "synced": "2026-11-08T20:15:24Z",
+     "tag": "client-public-linux-v740477",
+     "version": "740477"
+    },
+    {
+     "added": 455,
+     "buildid": "26474873",
+     "bytes": 4649782941,
+     "commit": "6bd10fb764427512cb3f2224394897427726e20e",
+     "files": 19883,
+     "key": "26474873",
+     "manifests": {
+      "322332": "38311723838500344"
+     },
+     "modified": 847,
+     "released": "2026-11-06T03:19:25Z",
+     "removed": 35,
+     "synced": "2026-11-08T20:15:24Z",
+     "tag": "client-public-linux-v762172",
+     "version": "762172"
+    }
+   ]
+  },
+  "client-public-windows": {
+   "app": 322330,
+   "app_name": "Client",
+   "branch": "public",
+   "main_depot": 322331,
+   "os": "windows",
+   "ref": "client-public-windows",
+   "steam": {
+    "api": {
+     "322331": "4765299823199933366"
+    },
+    "buildid": "26474873",
+    "manifests": {
+     "228982": "6413394087650432851",
+     "228988": "6645201662696499616",
+     "228990": "1829726630299308803",
+     "322331": "4765299823199933366"
+    }
+   },
+   "title": "Client / public / windows",
+   "versions": [
+    {
+     "added": 19791,
+     "buildid": "24080983",
+     "bytes": 4712586689,
+     "commit": "287245f3195e37933c21e9c6129dd48fa245a2aa",
+     "files": 19791,
+     "key": "24080983",
+     "legacy": true,
+     "manifests": {},
+     "modified": 0,
+     "note": "Imported from the original folder-layout mirror (2026-08-06).",
+     "released": "2026-08-06T05:36:41Z",
+     "removed": 0,
+     "synced": "2026-11-08T20:15:24Z",
+     "tag": "client-public-windows-v740477",
+     "version": "740477"
+    },
+    {
+     "added": 455,
+     "buildid": "26474873",
+     "bytes": 4812436327,
+     "commit": "d86dcc074e347a90480587494174611b6ec72259",
+     "files": 20213,
+     "key": "26474873",
+     "manifests": {
+      "228982": "6413394087650432851",
+      "228988": "6645201662696499616",
+      "228990": "1829726630299308803",
+      "322331": "4765299823199933366"
+     },
+     "modified": 2252,
+     "released": "2026-11-06T03:19:25Z",
+     "removed": 33,
+     "synced": "2026-11-08T20:15:24Z",
+     "tag": "client-public-windows-v762172",
+     "version": "762172"
+    }
+   ]
+  },
+  "client-updatebeta-linux": {
+   "app": 322330,
+   "app_name": "Client",
+   "branch": "updatebeta",
+   "main_depot": 322332,
+   "os": "linux",
+   "ref": "client-updatebeta-linux",
+   "steam": {
+    "api": {
+     "322332": "4336958436948387514"
+    },
+    "buildid": "26002070",
+    "manifests": {
+     "322332": "4336958436948387514"
+    }
+   },
+   "title": "Client / updatebeta / linux",
+   "versions": [
+    {
+     "added": 19172,
+     "buildid": "23604597",
+     "bytes": 4503405354,
+     "commit": "dd0a8712862c977798f38bff0625eba8631179b6",
+     "files": 19172,
+     "key": "23604597",
+     "legacy": true,
+     "manifests": {},
+     "modified": 0,
+     "note": "Imported from the original folder-layout mirror (2026-08-06).",
+     "released": "2026-08-06T05:36:41Z",
+     "removed": 0,
+     "synced": "2026-11-08T20:15:24Z",
+     "tag": "client-updatebeta-linux-v735984",
+     "version": "735984"
+    },
+    {
+     "added": 504,
+     "buildid": "26002070",
+     "bytes": 4603569472,
+     "commit": "dcaed4d49e6f5ba83c94ba591a611b87288f84f4",
+     "files": 19641,
+     "key": "26002070",
+     "manifests": {
+      "322332": "4336958436948387514"
+     },
+     "modified": 803,
+     "released": "2026-10-17T02:18:19Z",
+     "removed": 35,
+     "synced": "2026-11-08T20:15:24Z",
+     "tag": "client-updatebeta-linux-v758848",
+     "version": "758848"
+    }
+   ]
+  },
+  "client-updatebeta-windows": {
+   "app": 322330,
+   "app_name": "Client",
+   "branch": "updatebeta",
+   "main_depot": 322331,
+   "os": "windows",
+   "ref": "client-updatebeta-windows",
+   "steam": {
+    "api": {
+     "322331": "2846637947631860758"
+    },
+    "buildid": "26002070",
+    "manifests": {
+     "228982": "6413394087650432851",
+     "228988": "6645201662696499616",
+     "228990": "1829726630299308803",
+     "322331": "2846637947631860758"
+    }
+   },
+   "title": "Client / updatebeta / windows",
+   "versions": [
+    {
+     "added": 19500,
+     "buildid": "23604597",
+     "bytes": 4661424497,
+     "commit": "b03abf38fc3a2215d66a3f50a87d16aa470247d4",
+     "files": 19500,
+     "key": "23604597",
+     "legacy": true,
+     "manifests": {},
+     "modified": 0,
+     "note": "Imported from the original folder-layout mirror (2026-08-06).",
+     "released": "2026-08-06T05:36:41Z",
+     "removed": 0,
+     "synced": "2026-11-08T20:15:24Z",
+     "tag": "client-updatebeta-windows-v735984",
+     "version": "735984"
+    },
+    {
+     "added": 504,
+     "buildid": "26002070",
+     "bytes": 4766231242,
+     "commit": "11a1ff4b03340fbea6521d2df0f478bfde51bcf2",
+     "files": 19971,
+     "key": "26002070",
+     "manifests": {
+      "228982": "6413394087650432851",
+      "228988": "6645201662696499616",
+      "228990": "1829726630299308803",
+      "322331": "2846637947631860758"
+     },
+     "modified": 803,
+     "released": "2026-10-17T02:18:19Z",
+     "removed": 33,
+     "synced": "2026-11-08T20:15:24Z",
+     "tag": "client-updatebeta-windows-v758848",
+     "version": "758848"
+    }
+   ]
+  },
+  "server-public-linux": {
+   "app": 343050,
+   "app_name": "Dedicated Server",
+   "branch": "public",
+   "main_depot": 343052,
+   "os": "linux",
+   "ref": "server-public-linux",
+   "steam": {
+    "api": {
+     "1006": "4559160656493359681",
+     "343052": "8255768648335872207"
+    },
+    "buildid": "26474880",
+    "manifests": {
+     "1006": "4559160656493359681",
+     "343052": "8255768648335872207"
+    }
+   },
+   "title": "Dedicated Server / public / linux",
+   "versions": [
+    {
+     "added": 19473,
+     "buildid": "24080846",
+     "bytes": 4737453788,
+     "commit": "e548a7d66209b86f7bfe5a05fd2359972bd030ea",
+     "files": 19473,
+     "key": "24080846",
+     "legacy": true,
+     "manifests": {},
+     "modified": 0,
+     "note": "Imported from the original folder-layout mirror (2026-08-06).",
+     "released": "2026-08-06T05:36:41Z",
+     "removed": 0,
+     "synced": "2026-11-08T20:15:24Z",
+     "tag": "server-public-linux-v740477",
+     "version": "740477"
+    },
+    {
+     "added": 455,
+     "buildid": "26474880",
+     "bytes": 4839391383,
+     "commit": "977caa3b9cdf9d76f38383266191cebcf78ab212",
+     "files": 19893,
+     "key": "26474880",
+     "manifests": {
+      "1006": "4559160656493359681",
+      "343052": "8255768648335872207"
+     },
+     "modified": 849,
+     "released": "2026-11-06T03:20:09Z",
+     "removed": 35,
+     "synced": "2026-11-08T20:15:24Z",
+     "tag": "server-public-linux-v762172",
+     "version": "762172"
+    }
+   ]
+  },
+  "server-public-windows": {
+   "app": 343050,
+   "app_name": "Dedicated Server",
+   "branch": "public",
+   "main_depot": 343051,
+   "os": "windows",
+   "ref": "server-public-windows",
+   "steam": {
+    "api": {
+     "1004": "7604377918839582995",
+     "343051": "9105026780103030280"
+    },
+    "buildid": "26474880",
+    "manifests": {
+     "1004": "7604377918839582995",
+     "228982": "6413394087650432851",
+     "228988": "6645201662696499616",
+     "343051": "9105026780103030280"
+    }
+   },
+   "title": "Dedicated Server / public / windows",
+   "versions": [
+    {
+     "added": 19644,
+     "buildid": "24080846",
+     "bytes": 4611836488,
+     "commit": "fcfe4384a8c54084450b1ee55fc38871b065ce8f",
+     "files": 19644,
+     "key": "24080846",
+     "legacy": true,
+     "manifests": {},
+     "modified": 0,
+     "note": "Imported from the original folder-layout mirror (2026-08-06).",
+     "released": "2026-08-06T05:36:41Z",
+     "removed": 0,
+     "synced": "2026-11-08T20:15:24Z",
+     "tag": "server-public-windows-v740477",
+     "version": "740477"
+    },
+    {
+     "added": 455,
+     "buildid": "26474880",
+     "bytes": 4711686126,
+     "commit": "c3779fda45dfaacd3ada8bf5fb8d36382f802050",
+     "files": 20066,
+     "key": "26474880",
+     "manifests": {
+      "1004": "7604377918839582995",
+      "228982": "6413394087650432851",
+      "228988": "6645201662696499616",
+      "343051": "9105026780103030280"
+     },
+     "modified": 2256,
+     "released": "2026-11-06T03:20:09Z",
+     "removed": 33,
+     "synced": "2026-11-08T20:15:24Z",
+     "tag": "server-public-windows-v762172",
+     "version": "762172"
+    }
+   ]
+  },
+  "server-updatebeta-linux": {
+   "app": 343050,
+   "app_name": "Dedicated Server",
+   "branch": "updatebeta",
+   "main_depot": 343052,
+   "os": "linux",
+   "ref": "server-updatebeta-linux",
+   "steam": {
+    "api": {
+     "1006": "4559160656493359681",
+     "343052": "8511558034976145982"
+    },
+    "buildid": "26002060",
+    "manifests": {
+     "1006": "4559160656493359681",
+     "343052": "8511558034976145982"
+    }
+   },
+   "title": "Dedicated Server / updatebeta / linux",
+   "versions": [
+    {
+     "added": 19182,
+     "buildid": "23604590",
+     "bytes": 4688754840,
+     "commit": "1d1eb2d7010698495f716516669a926009acb444",
+     "files": 19182,
+     "key": "23604590",
+     "legacy": true,
+     "manifests": {},
+     "modified": 0,
+     "note": "Imported from the original folder-layout mirror (2026-08-06).",
+     "released": "2026-08-06T05:36:41Z",
+     "removed": 0,
+     "synced": "2026-11-08T20:15:24Z",
+     "tag": "server-updatebeta-linux-v735984",
+     "version": "735984"
+    },
+    {
+     "added": 504,
+     "buildid": "26002060",
+     "bytes": 4793182106,
+     "commit": "e189be49973c3154f7651866f4fd18af350614ae",
+     "files": 19651,
+     "key": "26002060",
+     "manifests": {
+      "1006": "4559160656493359681",
+      "343052": "8511558034976145982"
+     },
+     "modified": 805,
+     "released": "2026-10-17T02:18:39Z",
+     "removed": 35,
+     "synced": "2026-11-08T20:15:24Z",
+     "tag": "server-updatebeta-linux-v758848",
+     "version": "758848"
+    }
+   ]
+  },
+  "server-updatebeta-windows": {
+   "app": 343050,
+   "app_name": "Dedicated Server",
+   "branch": "updatebeta",
+   "main_depot": 343051,
+   "os": "windows",
+   "ref": "server-updatebeta-windows",
+   "steam": {
+    "api": {
+     "1004": "7604377918839582995",
+     "343051": "3198350085561983906"
+    },
+    "buildid": "26002060",
+    "manifests": {
+     "1004": "7604377918839582995",
+     "228982": "6413394087650432851",
+     "228988": "6645201662696499616",
+     "343051": "3198350085561983906"
+    }
+   },
+   "title": "Dedicated Server / updatebeta / windows",
+   "versions": [
+    {
+     "added": 19353,
+     "buildid": "23604590",
+     "bytes": 4560674296,
+     "commit": "60211e8dc7f0897a199b87f9bd17eb35464472fe",
+     "files": 19353,
+     "key": "23604590",
+     "legacy": true,
+     "manifests": {},
+     "modified": 0,
+     "note": "Imported from the original folder-layout mirror (2026-08-06).",
+     "released": "2026-08-06T05:36:41Z",
+     "removed": 0,
+     "synced": "2026-11-08T20:15:24Z",
+     "tag": "server-updatebeta-windows-v735984",
+     "version": "735984"
+    },
+    {
+     "added": 504,
+     "buildid": "26002060",
+     "bytes": 4665481041,
+     "commit": "8065b19eda9560399b2b19a7d45f608b05348858",
+     "files": 19824,
+     "key": "26002060",
+     "manifests": {
+      "1004": "7604377918839582995",
+      "228982": "6413394087650432851",
+      "228988": "6645201662696499616",
+      "343051": "3198350085561983906"
+     },
+     "modified": 807,
+     "released": "2026-10-17T02:18:39Z",
+     "removed": 33,
+     "synced": "2026-11-08T20:15:24Z",
+     "tag": "server-updatebeta-windows-v758848",
+     "version": "758848"
+    }
+   ]
+  }
+ },
+ "main_leaf": "client-public-windows",
+ "repo": "Excavarium/AncientRepository",
+ "schema": 1,
+ "updated": "2026-11-08T20:15:24Z"
+}
