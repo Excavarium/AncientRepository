@@ -106,13 +106,13 @@ async function router() {
     const [path, query] = location.hash.replace(/^#\/?/, "").split("?");
     const parts = path.split("/").filter(Boolean).map(decodeURIComponent);
     const q = new URLSearchParams(query || "");
-    if (!parts.length) return viewHome();
+    if (!parts.length) return await viewHome();
     const [leaf, a, b, ...rest] = parts;
     if (!leafOf(leaf)) throw new Error(`unknown leaf ${leaf}`);
-    if (!a) return viewLeaf(leaf);
-    if (a === "diff") return viewDiff(leaf, b, q);
-    if (b === "file") return viewFile(leaf, a, rest.join("/"));
-    return viewTree(leaf, a, b === "tree" ? rest.join("/") : "", q);
+    if (!a) return await viewLeaf(leaf);
+    if (a === "diff") return await viewDiff(leaf, b, q);
+    if (b === "file") return await viewFile(leaf, a, rest.join("/"));
+    return await viewTree(leaf, a, b === "tree" ? rest.join("/") : "", q);
   } catch (e) { fail(e); }
 }
 window.addEventListener("hashchange", router);
