@@ -1,7 +1,7 @@
 {
   "original_name": "dontstarve_steam_x64.exe",
   "relative_hint": "dontstarve_steam_x64.exe",
-  "sha256": "08b254abad063db3943bf3f2c013d248f1eb500e32bf924e064843b9f3b3ba34",
-  "size": 7180288,
+  "sha256": "0f2dd692cfa432245a2c1d96f4ba3573985992c59783105eaaf7d7c3a7280be8",
+  "size": 7183360,
   "note": "Binary stripped from AncientRepository; hash retained for change detection."
 }
