@@ -1,7 +1,7 @@
 {
   "original_name": "CrashReporter.exe",
   "relative_hint": "CrashReporter.exe",
-  "sha256": "b2e132d5c5ebd62d74482749fd34ba6469302cc6e442a7df2ac78525edfbff12",
+  "sha256": "11e601796ce8865c776698791683cd74b286f234c2ecae53783cc82f72c69c00",
   "size": 2317312,
   "note": "Binary stripped from AncientRepository; hash retained for change detection."
 }
